@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QTcpSocket>
 #include <QSslError>
+#include <QQueue>
 
 #include "flist_channelsummary.h"
 #include "flist_enums.h"
@@ -123,6 +124,9 @@ private:
 	QMap<QString, QString> operatorlist; //<List of all known characters that are chat operators (indexed by lower case).
 	NotifyStringList ignorelist; //<List of all characters that are being ignored.
 	QHash<QString, FChannel *> channellist; //<List of channels that this session has joined (or was previously joined to).
+
+	QQueue<QString> joinQueue;
+
 public:
 	QStringList autojoinchannels; //<List of channels the client should join upon connecting.
 	QHash<QString, QString> servervariables; //<List of variables as reported by the server.
@@ -131,10 +135,10 @@ public:
 	QList<FChannelSummary> knownopenroomlist; //<List of known open rooms, as reported by the server.
 
 private:
-
-
 	bool wsready;
 	std::string socketreadbuffer;
+
+	void processJoinQueue();
 
 #define COMMAND(name) void cmd##name(std::string &rawpacket, JSONNode &nodes)
 	COMMAND(ADL);

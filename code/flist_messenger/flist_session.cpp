@@ -28,6 +28,7 @@ FSession::FSession(FAccount *account, QString &character, QObject *parent) :
 	operatorlist(),
 	ignorelist(),
 	channellist(),
+	joinQueue(),
 	autojoinchannels(),
 	servervariables(),
 	knownchannellist(),
@@ -87,14 +88,32 @@ QString FSession::getCharacterHtml(QString name) {
 
 
 /**
-Tell the server that we wish to join the given channel.
+Tell the server that we wish to join the given channel, but only have one such request in flight
+at a time. The rest of the logic is in processQueue(), called from the ERR and CDS handlers.
  */
 void FSession::joinChannel(QString name)
 {
-	JSONNode joinnode;
-	joinnode.push_back(JSONNode("channel", name.toStdString()));
-	wsSend("JCH", joinnode);
+	if(joinQueue.empty())
+	{
+		JSONNode joinnode;
+		joinnode.push_back(JSONNode("channel", name.toStdString()));
+		wsSend("JCH", joinnode);
+	}
+	joinQueue.enqueue(name);
 }
+
+void FSession::processJoinQueue()
+{
+	joinQueue.dequeue();
+	if(!joinQueue.empty())
+	{
+		QString chan = joinQueue.head();
+		JSONNode joinnode;
+		joinnode.push_back(JSONNode("channel", chan.toStdString()));
+		wsSend("JCH", joinnode);
+	}
+}
+
 void FSession::createPublicChannel(QString name)
 {
 	// [0:59 AM]>>CRC {"channel":"test"}
@@ -554,6 +573,12 @@ COMMAND(CDS)
 	}
 	channel->setDescription(description);
 	account->ui->setChannelDescription(this, channelname, description);
+
+	// Queued joins. See also FSession::joinChannel for the rest of the logic.
+	if(joinQueue.head() == channelname)
+	{
+		processJoinQueue();
+	}
 }
 COMMAND(CIU)
 {
@@ -1433,6 +1458,9 @@ COMMAND(ERR)
 		wsSend(idenStr);
 		break;
 	}
+	case 28:
+		processJoinQueue();
+		break;
 	default:
 		break;
 	}
