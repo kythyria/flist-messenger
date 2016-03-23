@@ -88,7 +88,7 @@ void FriendsDialog::showFriends()
 
 void FriendsDialog::showIgnore()
 {
-	ui->tabWidget->setCornerWidget(ui->ignoreTab);
+	ui->tabWidget->setCurrentWidget(ui->ignoreTab);
 	show();
 }
 

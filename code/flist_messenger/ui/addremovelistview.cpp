@@ -26,6 +26,7 @@ AddRemoveListView::AddRemoveListView(QWidget *parent) :
 	completionSorter = 0;
 	listData = 0;
 	listSorter = 0;
+	dataProvider = 0;
 }
 
 AddRemoveListView::~AddRemoveListView()
@@ -61,6 +62,8 @@ void AddRemoveListView::showEvent(QShowEvent *)
 
 void AddRemoveListView::detachData()
 {
+	if(!dataProvider) { return; }
+
 	if(completionData)
 	{
 		completer->setModel(0);
@@ -84,6 +87,8 @@ void AddRemoveListView::detachData()
 
 void AddRemoveListView::attachData()
 {
+	if(!dataProvider) { return; }
+
 	completionData = dataProvider->getCompletionSource();
 	if(completionData)
 	{
