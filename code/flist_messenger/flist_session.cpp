@@ -1458,7 +1458,10 @@ COMMAND(ERR)
 		wsSend(idenStr);
 		break;
 	}
-	case 28:
+	case 28: // Already in channel
+	case 26: // No such channel
+	case 44: // Not invited to an invite-only channel
+	case 48: // Banned from that channel
 		processJoinQueue();
 		break;
 	default:
