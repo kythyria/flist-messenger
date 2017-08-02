@@ -33,7 +33,7 @@
      </property>
      <widget class="QWidget" name="friendsTab">
       <attribute name="icon">
-       <iconset resource="../resources.qrc">
+       <iconset>
         <normaloff>:/images/users.png</normaloff>:/images/users.png</iconset>
       </attribute>
       <attribute name="title">
@@ -65,7 +65,7 @@
           <string>Open PM</string>
          </property>
          <property name="icon">
-          <iconset resource="../resources.qrc">
+          <iconset>
            <normaloff>:/images/balloon.png</normaloff>:/images/balloon.png</iconset>
          </property>
         </widget>
@@ -74,7 +74,7 @@
      </widget>
      <widget class="QWidget" name="ignoreTab">
       <attribute name="icon">
-       <iconset resource="../resources.qrc">
+       <iconset>
         <normaloff>:/images/heart-break.png</normaloff>:/images/heart-break.png</iconset>
       </attribute>
       <attribute name="title">
@@ -108,9 +108,7 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../resources.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
