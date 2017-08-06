@@ -13,36 +13,33 @@ public:
 	explicit FSettings(QString settingsfile, QObject *parent = 0);
 	~FSettings();
 
-#define PROTOGETSET(func, typ)			\
-	typ get##func();			\
-	void set##func(typ opt)
+#define PROTOGETSET(func, typ)                          \
+	typ get##func() const;                              \
+	void set##func(typ opt);                            \
+	Q_PROPERTY(typ func READ get##func WRITE set##func)
 
-#define PROTOGETSETANY(func, typ, defaultvalue)			\
-	typ get##func(QString key, typ dflt = defaultvalue);	\
+#define PROTOGETSETANY(func, typ, defaultvalue)                \
+	typ get##func(QString key, typ dflt = defaultvalue) const; \
 	void set##func(QString key, typ value)
-
-#define PROTOGETSETGROUP(func, typ)			\
-	typ get##func(QString group);			\
-	void set##func(QString group, typ opt)
 
 //Generic
 	PROTOGETSETANY(Bool, bool, false);
 	PROTOGETSETANY(String, QString, "");
 
 //Account
-	PROTOGETSET(UserAccount, QString);
+	PROTOGETSET(UserAccount, QString)
 //Channels
-	PROTOGETSET(DefaultChannels, QString);
+	PROTOGETSET(DefaultChannels, QString)
 //Logging
-	PROTOGETSET(LogChat, bool);
+	PROTOGETSET(LogChat, bool)
 //Show message options
-	PROTOGETSET(ShowOnlineOfflineMessage, bool);
-	PROTOGETSET(ShowJoinLeaveMessage, bool);
+	PROTOGETSET(ShowOnlineOfflineMessage, bool)
+	PROTOGETSET(ShowJoinLeaveMessage, bool)
 //Sound options
-	PROTOGETSET(PlaySounds, bool);
-
+	PROTOGETSET(PlaySounds, bool)
 
 #undef PROTOGETSET
+#undef PROTOGETSETANY
 
 	QSettings *qsettings;
 
