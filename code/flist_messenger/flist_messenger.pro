@@ -9,7 +9,7 @@ GITHASHSTR = '\\"$${GITHASH}\\"'
 DEFINES += GIT_REV=\"$${GITREVSTR}\"
 DEFINES += GIT_HASH=\"$${GITHASHSTR}\"
 
-CONFIG += qt resources warn_on
+CONFIG += qt resources warn_on c++11
 CONFIG -= console
 
 QT += core gui network
@@ -79,7 +79,8 @@ HEADERS += \
     ui/friendsdialog.h \
     ui/addremovelistview.h \
     notifylist.h \
-    ui/stringcharacterlistmodel.h
+    ui/stringcharacterlistmodel.h \
+    flist_enums.def
 SOURCES += \
            flist_account.cpp \
            flist_avatar.cpp \

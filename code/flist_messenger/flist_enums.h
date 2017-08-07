@@ -78,4 +78,17 @@ enum BoolTristate {
 #define BOOL_TRISTATE_DEFAULT
 extern EnumLookup BoolTristateEnum;
 
+template<typename T> QString enumToKey(T p);
+template<typename T> T keyToEnum(QString s);
+
+#define ENUMDEF_ENUMMEMBER(y,x) x,
+#define ENUMDEF_MAKE(what)                       \
+	enum class what : int {                      \
+	    ENUMDEF_##what(ENUMDEF_ENUMMEMBER,)       \
+	};                                           \
+	template<> QString enumToKey<what>(what p); \
+	template<> what keyToEnum<what>(QString s); 
+
+#include "flist_enums.def"
+
 #endif // FLIST_ENUMS_H

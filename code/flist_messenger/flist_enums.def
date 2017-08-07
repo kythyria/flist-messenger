@@ -1,0 +1,13 @@
+#ifndef ENUMDEF_MAKE
+#define ENUMDEF_MAKE(X) ;
+#endif
+
+#define ENUMDEF_BufferLabelColor(X,Y) \
+	X(Y,Quiescent)                    \
+	X(Y,StatusChanged)                \
+	X(Y,NewMessage)                   \
+	X(Y,ImportantMessage)             
+
+ENUMDEF_MAKE(BufferLabelColor)
+
+#undef ENUMDEF_MAKE
