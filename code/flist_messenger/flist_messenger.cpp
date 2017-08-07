@@ -118,7 +118,7 @@ void flist_messenger::enterPressed()
     if (currentPanel == 0) return;
 
     QString input = plainTextEdit->toPlainText();
-    if (currentPanel->getMode() == CHANNEL_MODE_ADS && !input.startsWith("/")) {
+    if (currentPanel->getMode() == ChannelMode::Ads && !input.startsWith("/")) {
         btnSendAdvClicked();
     } else {
         parseInput();
@@ -1517,13 +1517,13 @@ Update the user interface based upon the mode of the current panel.
  */
 void flist_messenger::updateChannelMode()
 {
-	if (currentPanel->getMode() == CHANNEL_MODE_CHAT ||
+	if (currentPanel->getMode() == ChannelMode::Chat ||
 	    currentPanel->type() == FChannel::CHANTYPE_PM || 
 	    currentPanel->type() == FChannel::CHANTYPE_CONSOLE) {
 		//Chat only, so disable ability to send ads.
 		btnSendAdv->setDisabled(true);
 		btnSendChat->setDisabled(false);
-	} else if (currentPanel->getMode() == CHANNEL_MODE_ADS) {
+	} else if (currentPanel->getMode() == ChannelMode::Ads) {
 		//Ads only, disable the ability to send regular chat messages.
 		btnSendAdv->setDisabled(false);
 		btnSendChat->setDisabled(true);
@@ -1648,7 +1648,7 @@ void flist_messenger::btnSendAdvClicked()
 		messageSystem(session, QString("<b>Error:</b> No message."), MESSAGE_TYPE_FEEDBACK);
 		return;
 	}
-	if ( currentPanel == console || currentPanel->getMode() == CHANNEL_MODE_CHAT || currentPanel->type() == FChannel::CHANTYPE_PM ) {
+	if ( currentPanel == console || currentPanel->getMode() == ChannelMode::Chat || currentPanel->type() == FChannel::CHANTYPE_PM ) {
 		messageSystem(session, QString("<b>Error:</b> Can't advertise here."), MESSAGE_TYPE_FEEDBACK);
 		return;
 	}
@@ -2007,12 +2007,12 @@ void flist_messenger::parseInput()
 		}
 		else if ( slashcommand == "/setmode" )
 		{
-			ChannelMode mode = CHANNEL_MODE_UNKNOWN;
+			ChannelMode mode = ChannelMode::Unknown;
 			if(parts.length() == 2)
 			{
-				mode = (ChannelMode)ChannelModeEnum.keyToValue(parts[1]);
+				mode = keyToEnum<ChannelMode>(parts[1]);
 			}
-			if (mode == CHANNEL_MODE_UNKNOWN)
+			if (mode == ChannelMode::Unknown)
 			{
 				QString err("Correct usage: /setmode &lt;chat|ads|both&gt;");
 				messageSystem(session, err, MESSAGE_TYPE_FEEDBACK);
@@ -2477,26 +2477,26 @@ bool flist_messenger::needsAttention(QString key, FChannelPanel *channelpanel, A
 	} else {
 		channelkey = QString("Character/%1/%2").arg(channelpanel->getChannelName(), key);
 	}
-	attentionmode = (AttentionMode)AttentionModeEnum.keyToValue(settings->getString(channelkey), ATTENTION_DEFAULT);
-	//debugMessage(QString("Channel (%1) attention mode: %2").arg(channelkey, AttentionModeEnum.valueToKey(attentionmode)));
-	if(attentionmode == ATTENTION_DEFAULT) {
-		attentionmode = (AttentionMode)AttentionModeEnum.keyToValue(settings->getString("Global/" + key), ATTENTION_DEFAULT);
+	attentionmode = keyToEnum(settings->getString(channelkey), AttentionMode::Default);
+	
+	if(attentionmode == AttentionMode::Default) {
+		attentionmode = keyToEnum(settings->getString("Global/" + key), AttentionMode::Default);
 	}
-	//debugMessage(QString("Global attention mode: %1").arg(AttentionModeEnum.valueToKey(attentionmode)));
-	if(attentionmode == ATTENTION_DEFAULT) {
+	
+	if(attentionmode == AttentionMode::Default) {
 		attentionmode = dflt;
 	}
-	//debugMessage(QString("Final attention mode: %1").arg(AttentionModeEnum.valueToKey(attentionmode)));
+	
 	switch(attentionmode) {
-	case ATTENTION_DEFAULT:
-	case ATTENTION_NEVER:
+	case AttentionMode::Default:
+	case AttentionMode::Never:
 		return false;
-	case ATTENTION_IFNOTFOCUSED:
+	case AttentionMode::IfNotFocused:
 		if(channelpanel == currentPanel) {
 			return false;
 		}
 		return true;
-	case ATTENTION_ALWAYS:
+	case AttentionMode::Always:
 		return true;
 	}
 	//should be unreachable
@@ -2608,16 +2608,16 @@ void flist_messenger::messageMessage(FMessage message)
 			case MESSAGE_TYPE_ROLL:
 				//todo: should rolls treated like ads or messages or as their own thing?
 			case MESSAGE_TYPE_RPAD:
-				message_rpad_ding |= needsAttention("message_rpad_ding", channelpanel, ATTENTION_NEVER);
-				message_rpad_flash |= needsAttention("message_rpad_flash", channelpanel, ATTENTION_NEVER);
+				message_rpad_ding |= needsAttention("message_rpad_ding", channelpanel, AttentionMode::Never);
+				message_rpad_flash |= needsAttention("message_rpad_flash", channelpanel, AttentionMode::Never);
 				break;
 			case MESSAGE_TYPE_CHAT:
 				if(channelpanel->type() == FChannel::CHANTYPE_PM) {
-					message_character_ding |= needsAttention("message_character_ding", channelpanel, ATTENTION_ALWAYS);
-					message_character_flash |= needsAttention("message_character_flash", channelpanel, ATTENTION_NEVER);
+					message_character_ding |= needsAttention("message_character_ding", channelpanel, AttentionMode::Always);
+					message_character_flash |= needsAttention("message_character_flash", channelpanel, AttentionMode::Never);
 				} else {
-					message_channel_ding |= needsAttention("message_channel_ding", channelpanel, ATTENTION_NEVER);
-					message_channel_flash |= needsAttention("message_channel_flash", channelpanel, ATTENTION_NEVER);
+					message_channel_ding |= needsAttention("message_channel_ding", channelpanel, AttentionMode::Never);
+					message_channel_flash |= needsAttention("message_channel_flash", channelpanel, AttentionMode::Never);
 				}
 				break;
 			default:

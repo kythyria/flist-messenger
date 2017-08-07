@@ -626,13 +626,13 @@ COMMAND(ICH)
 	channel = addChannel(channelname, channeltitle);
 	account->ui->addChannel(this, channelname, channeltitle);
 	if(channelmode == "both") {
-		channel->mode = CHANNEL_MODE_BOTH;
+		channel->mode = ChannelMode::Both;
 	} else if(channelmode == "ads") {
-		channel->mode = CHANNEL_MODE_ADS;
+		channel->mode = ChannelMode::Ads;
 	} else if(channelmode == "chat") {
-		channel->mode = CHANNEL_MODE_CHAT;
+		channel->mode = ChannelMode::Chat;
 	} else {
-		channel->mode = CHANNEL_MODE_UNKNOWN;
+		channel->mode = ChannelMode::Unknown;
 		debugMessage("[SERVER BUG]: Received unknown channel mode '" + channelmode + "' for channel '" + channelname + "'. <<" + QString::fromStdString(rawpacket));
 	}
 	account->ui->setChannelMode(this, channelname, channel->mode);
@@ -705,13 +705,13 @@ COMMAND(RMO)
 	}
 	QString modedescription;
 	if(channelmode == "both") {
-		channel->mode = CHANNEL_MODE_BOTH;
+		channel->mode = ChannelMode::Both;
 		modedescription = "chat and ads";
 	} else if(channelmode == "ads") {
-		channel->mode = CHANNEL_MODE_ADS;
+		channel->mode = ChannelMode::Ads;
 		modedescription = "ads only";
 	} else if(channelmode == "chat") {
-		channel->mode = CHANNEL_MODE_CHAT;
+		channel->mode = ChannelMode::Chat;
 		modedescription = "chat only";
 	} else {
 		debugMessage(QString("[SERVER BUG]: Received channel mode update '%1' for channel '%2'. %3").arg(channelmode).arg(channelname).arg(QString::fromStdString(rawpacket)));
@@ -1491,7 +1491,7 @@ void FSession::sendChannelMessage(QString channelname, QString message)
 		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but you are not currently in the channel. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
 		return;
 	}
-	if(channel->mode == CHANNEL_MODE_ADS) {
+	if(channel->mode == ChannelMode::Ads) {
 		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel only allows advertisements. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
 		return;
 	}
@@ -1519,7 +1519,7 @@ void FSession::sendChannelAdvertisement(QString channelname, QString message)
 		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but you are not currently in the channel. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
 		return;
 	}
-	if(channel->mode == CHANNEL_MODE_CHAT) {
+	if(channel->mode == ChannelMode::Chat) {
 		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel does not allow advertisements. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
 		return;
 	}
@@ -1811,7 +1811,7 @@ void FSession::setChannelMode(QString channel, ChannelMode mode)
 {
 	JSONNode node;
 	JSONNode channode("channel", channel.toStdString());
-	JSONNode modenode("mode", ChannelModeEnum.valueToKey(mode).toStdString());
+	JSONNode modenode("mode", enumToKey(mode).toLower().toStdString());
 	node.push_back(channode);
 	node.push_back(modenode);
 	wsSend("RMO", node);

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QString>
 #include "flist_channel.h"
+#include "flist_enums.h"
 
 class QComboBox;
 class QHBoxLayout;
@@ -22,7 +23,7 @@ public:
 private:
 	QHBoxLayout *buildHBox(QString labeltext, QWidget *widget);
 	QComboBox *buildPulldown(QStringList list);
-	void setPullDown(QComboBox *pulldown, QString field, int dflt);
+	void setPullDown(QComboBox *pulldown, QString field, AttentionMode dflt);
 	void savePullDown(QComboBox *pulldown, QString field);
 signals:
 

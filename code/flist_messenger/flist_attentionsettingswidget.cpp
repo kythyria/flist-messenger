@@ -112,10 +112,12 @@ FAttentionSettingsWidget::FAttentionSettingsWidget(QString channelname, QString 
 	this->setLayout(vbox);
 }
 
-void FAttentionSettingsWidget::setPullDown(QComboBox *pulldown, QString field, int dflt)
+void FAttentionSettingsWidget::setPullDown(QComboBox *pulldown, QString field, AttentionMode dflt)
 {
 	bool isglobal = channelname.isEmpty();
-	pulldown->setCurrentIndex(AttentionModeEnum.keyToValue(settings->qsettings->value(settingprefix + field).toString(), dflt) - (isglobal ? 1 : 0));
+	QString setting = settings->qsettings->value(settingprefix + field).toString();
+	int num = (int)keyToEnum<AttentionMode>(setting, dflt);
+	pulldown->setCurrentIndex(num - (isglobal ? 1 : 0));
 }
 
 void FAttentionSettingsWidget::loadSettings()
@@ -130,30 +132,30 @@ void FAttentionSettingsWidget::loadSettings()
 	
 
 	if(isglobal || ischannel) {
-		setPullDown(message_channel_ding_pulldown,   "message_channel_ding",   isglobal ? ATTENTION_NEVER : ATTENTION_DEFAULT);
-		setPullDown(message_rpad_ding_pulldown,      "message_rpad_ding",      isglobal ? ATTENTION_NEVER : ATTENTION_DEFAULT);
+		setPullDown(message_channel_ding_pulldown,   "message_channel_ding",   isglobal ? AttentionMode::Never : AttentionMode::Default);
+		setPullDown(message_rpad_ding_pulldown,      "message_rpad_ding",      isglobal ? AttentionMode::Never : AttentionMode::Default);
 	}
 	if(isglobal || !ischannel) {
-		setPullDown(message_character_ding_pulldown, "message_character_ding", isglobal ? ATTENTION_ALWAYS : ATTENTION_DEFAULT);
+		setPullDown(message_character_ding_pulldown, "message_character_ding", isglobal ? AttentionMode::Always : AttentionMode::Default);
 	}
-		setPullDown(message_keyword_ding_pulldown,   "message_keyword_ding",   isglobal ? ATTENTION_NEVER : ATTENTION_DEFAULT);
+		setPullDown(message_keyword_ding_pulldown,   "message_keyword_ding",   isglobal ? AttentionMode::Never : AttentionMode::Default);
 
 	if(isglobal || ischannel) {
-		setPullDown(message_channel_flash_pulldown,   "message_channel_flash",   isglobal ? ATTENTION_NEVER : ATTENTION_DEFAULT);
-		setPullDown(message_rpad_flash_pulldown,      "message_rpad_flash",      isglobal ? ATTENTION_NEVER : ATTENTION_DEFAULT);
+		setPullDown(message_channel_flash_pulldown,   "message_channel_flash",   isglobal ? AttentionMode::Never : AttentionMode::Default);
+		setPullDown(message_rpad_flash_pulldown,      "message_rpad_flash",      isglobal ? AttentionMode::Never : AttentionMode::Default);
 	}
 	if(isglobal || !ischannel) {
-		setPullDown(message_character_flash_pulldown, "message_character_flash", isglobal ? ATTENTION_NEVER : ATTENTION_DEFAULT);
+		setPullDown(message_character_flash_pulldown, "message_character_flash", isglobal ? AttentionMode::Never : AttentionMode::Default);
 	}
-		setPullDown(message_keyword_flash_pulldown,   "message_keyword_flash",   isglobal ? ATTENTION_NEVER : ATTENTION_DEFAULT);
+		setPullDown(message_keyword_flash_pulldown,   "message_keyword_flash",   isglobal ? AttentionMode::Never : AttentionMode::Default);
 
 }
 
 void FAttentionSettingsWidget::savePullDown(QComboBox *pulldown, QString field)
 {
 	bool isglobal = channelname.isEmpty();
-
-	settings->qsettings->setValue(settingprefix + field, AttentionModeEnum.valueToKey(pulldown->currentIndex() + (isglobal ? 1 : 0)));
+	AttentionMode value = (AttentionMode)(pulldown->currentIndex()+ (isglobal ? 1 : 0));
+	settings->qsettings->setValue(settingprefix + field, enumToKey(value));
 }
 void FAttentionSettingsWidget::saveSettings()
 {

@@ -2,12 +2,32 @@
 #define ENUMDEF_MAKE(X) ;
 #endif
 
-#define ENUMDEF_BufferLabelColor(X,Y) \
-	X(Y,Quiescent)                    \
-	X(Y,StatusChanged)                \
-	X(Y,NewMessage)                   \
-	X(Y,ImportantMessage)             
+// Enums declared this way will automatically be picked up by flist_enums.h and
+// flist_enums.cpp, which will also arrange for the string conversions to happen
+// automagically. They are enum *classes*, not regular enums, so beware scoping.
+// The scoping is why X(Y,label) rather than just X(label): the name of the enum
+// needs to be passed around so that it can actually be used.
 
+#define ENUMDEF_BufferLabelColor(X,Y) \
+	X(Y,Quiescent)        \
+	X(Y,StatusChanged)    \
+	X(Y,NewMessage)       \
+	X(Y,ImportantMessage) 
 ENUMDEF_MAKE(BufferLabelColor)
+
+//TODO: Use the unknown value for stuff
+#define ENUMDEF_ChannelMode(X,Y) \
+	X(Y,Unknown) \
+	X(Y,Chat)    \
+	X(Y,Ads)     \
+	X(Y,Both)    
+ENUMDEF_MAKE(ChannelMode)
+
+#define ENUMDEF_AttentionMode(X,Y) \
+	X(Y,Default)      \
+	X(Y,Never)        \
+	X(Y,IfNotFocused) \
+	X(Y,Always)       
+ENUMDEF_MAKE(AttentionMode)
 
 #undef ENUMDEF_MAKE

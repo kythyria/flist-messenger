@@ -11,7 +11,7 @@ FChannel::FChannel(QObject *parent, FSession *session, QString name, QString tit
 	characterlist(),
 	operatorlist(),
 	joined(true),
-	mode(CHANNEL_MODE_BOTH)
+	mode(ChannelMode::Both)
 {
 	if(name.startsWith("ADH-")) {
 		type = CHANTYPE_ADHOC;

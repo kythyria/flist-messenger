@@ -2,20 +2,6 @@
 #define FLIST_ENUMS_H
 
 #include <QString>
-#include <QHash>
-
-class EnumLookup {
-public:
-	EnumLookup(QString enumlist, QString dflt = QString());
-	int keyToValue(QString key) {return valuelookup.value(key, defaultvalue);}
-	int keyToValue(QString key, int defaultvalue) {return valuelookup.value(key, defaultvalue);}
-	QString valueToKey(int val) {return keylookup.value(val, QString());}
-private:
-	QString defaultkey;
-	int defaultvalue;
-	QHash<QString, int>valuelookup;
-	QHash<int, QString>keylookup;
-};
 
 enum MessageType {
 	MESSAGE_TYPE_LOGIN,
@@ -49,7 +35,7 @@ enum TypingStatus {
 	TYPING_STATUS_PAUSED,
 };
 
-enum ChannelMode {
+/*enum ChannelMode {
 	//TODO: Use the unknown value for stuff
 	CHANNEL_MODE_UNKNOWN,
 	CHANNEL_MODE_CHAT,
@@ -58,36 +44,20 @@ enum ChannelMode {
 };
 #define CHANNEL_MODE_ENUM "unknown, chat, ads, both"
 #define CHANNEL_MODE_DEFAULT "unknown"
-extern EnumLookup ChannelModeEnum;
+extern EnumLookup ChannelModeEnum;*/
 
-enum AttentionMode {
-	ATTENTION_DEFAULT,
-	ATTENTION_NEVER,
-	ATTENTION_IFNOTFOCUSED,
-	ATTENTION_ALWAYS
-};
-#define ATTENTION_MODE_ENUM "default, never, ifnotfocused, always"
-extern EnumLookup AttentionModeEnum;
-
-enum BoolTristate {
-	BOOL_FALSE,
-	BOOL_TRUE,
-	BOOL_DEFAULT
-};
-#define BOOL_TRISTATE_ENUM "false, true, default"
-#define BOOL_TRISTATE_DEFAULT
-extern EnumLookup BoolTristateEnum;
-
+// These two functions are auto-implemented in flist_enums.cpp, and convert
+// between FooEnum::SomeVal and QString("SomeVal").
 template<typename T> QString enumToKey(T p);
-template<typename T> T keyToEnum(QString s);
+template<typename T> T keyToEnum(QString s, T defval = (T)0);
 
 #define ENUMDEF_ENUMMEMBER(y,x) x,
 #define ENUMDEF_MAKE(what)                       \
 	enum class what : int {                      \
-	    ENUMDEF_##what(ENUMDEF_ENUMMEMBER,)       \
+	    ENUMDEF_##what(ENUMDEF_ENUMMEMBER,)      \
 	};                                           \
-	template<> QString enumToKey<what>(what p); \
-	template<> what keyToEnum<what>(QString s); 
+	template<> QString enumToKey<what>(what p);  \
+	template<> what keyToEnum<what>(QString s, what defval);
 
 #include "flist_enums.def"
 

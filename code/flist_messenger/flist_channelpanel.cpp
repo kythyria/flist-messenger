@@ -82,7 +82,7 @@ FChannelPanel::FChannelPanel (iUserInterface *ui, QString sessionid, QString pan
 	sessionid(sessionid),
 	panelname(panelname)
 {
-	mode = CHANNEL_MODE_BOTH;
+	mode = ChannelMode::Both;
         chanName = channelname;
         creationTime = time ( 0 );
         chanType = type;
@@ -427,9 +427,9 @@ QString* FChannelPanel::toString()
         *rv += "\nActive: ";
         *rv += active ? "Yes" : "No";
         *rv += "\nMode: ";
-        if (mode == CHANNEL_MODE_CHAT) *rv += "Chat";
-        else if (mode == CHANNEL_MODE_ADS) *rv += "Ads";
-        else if (mode == CHANNEL_MODE_BOTH) *rv += "Both";
+        if (mode == ChannelMode::Chat) *rv += "Chat";
+        else if (mode == ChannelMode::Ads) *rv += "Ads";
+        else if (mode == ChannelMode::Both) *rv += "Both";
         else *rv += "INVALID MODE";
         return rv;
 }
