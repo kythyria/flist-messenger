@@ -2509,17 +2509,15 @@ void flist_messenger::messageMessage(FMessage message)
 	QString sessionid = message.getSessionID();
 	FSession *session = getSession(sessionid);
 	//bool destinationchannelalwaysding = false; //1 or more destination channels that are set to always ding
-	bool message_rpad_ding = false;
-	bool message_channel_ding = false;
-	bool message_character_ding = false;
-	bool message_keyword_ding = false;
-	bool message_rpad_flash = false;
-	bool message_channel_flash = false;
-	bool message_character_flash = false;
-	bool message_keyword_flash = false;
+	
+	bool message_ding = false;
+	bool message_flash = false;
+	FSound::soundName soundtype = FSound::SOUND_NONE;
+	
 	QString panelname;
 	bool globalkeywordmatched = false;
 	QString plaintext = message.getPlainTextMessage();
+	
 	switch(message.getMessageType()) {
 	case MESSAGE_TYPE_ROLL:
 	case MESSAGE_TYPE_RPAD:
@@ -2577,23 +2575,12 @@ void flist_messenger::messageMessage(FMessage message)
 		}
 		//Filter based on message type.
 		switch(message.getMessageType()) {
-		case MESSAGE_TYPE_LOGIN:
-			break;
 		case MESSAGE_TYPE_ONLINE:
 		case MESSAGE_TYPE_OFFLINE:
-			if(!settings->getShowOnlineOfflineMessage()) {
-				continue;
-			}
-			break;
 		case MESSAGE_TYPE_STATUS:
 			if(!settings->getShowOnlineOfflineMessage()) {
 				continue;
 			}
-			break;
-		case MESSAGE_TYPE_CHANNEL_DESCRIPTION:
-		case MESSAGE_TYPE_CHANNEL_MODE:
-			break;
-		case MESSAGE_TYPE_CHANNEL_INVITE:
 			break;
 		case MESSAGE_TYPE_JOIN:
 		case MESSAGE_TYPE_LEAVE:
@@ -2608,16 +2595,16 @@ void flist_messenger::messageMessage(FMessage message)
 			case MESSAGE_TYPE_ROLL:
 				//todo: should rolls treated like ads or messages or as their own thing?
 			case MESSAGE_TYPE_RPAD:
-				message_rpad_ding |= needsAttention("message_rpad_ding", channelpanel, AttentionMode::Never);
-				message_rpad_flash |= needsAttention("message_rpad_flash", channelpanel, AttentionMode::Never);
+				message_ding |= needsAttention("message_rpad_ding", channelpanel, AttentionMode::Never);
+				message_flash |= needsAttention("message_rpad_flash", channelpanel, AttentionMode::Never);
 				break;
 			case MESSAGE_TYPE_CHAT:
 				if(channelpanel->type() == FChannel::CHANTYPE_PM) {
-					message_character_ding |= needsAttention("message_character_ding", channelpanel, AttentionMode::Always);
-					message_character_flash |= needsAttention("message_character_flash", channelpanel, AttentionMode::Never);
+					message_ding |= needsAttention("message_character_ding", channelpanel, AttentionMode::Always);
+					message_flash |= needsAttention("message_character_flash", channelpanel, AttentionMode::Never);
 				} else {
-					message_channel_ding |= needsAttention("message_channel_ding", channelpanel, AttentionMode::Never);
-					message_channel_flash |= needsAttention("message_channel_flash", channelpanel, AttentionMode::Never);
+					message_ding |= needsAttention("message_channel_ding", channelpanel, AttentionMode::Never);
+					message_flash |= needsAttention("message_channel_flash", channelpanel, AttentionMode::Never);
 				}
 				break;
 			default:
@@ -2626,15 +2613,15 @@ void flist_messenger::messageMessage(FMessage message)
 			//Per channel keyword matching.
 			foreach(QString keyword, channelpanel->getKeywordList()) {
 				if(plaintext.contains(keyword, Qt::CaseInsensitive)) {
-					message_keyword_ding |= true;
-					message_keyword_flash |= true;
+					message_ding |= true;
+					message_flash |= true;
 					break;
 				}
 			}
 			//Can it match global keywords?
 			if(globalkeywordmatched && !getChannelBool("ignore_global_keywords", channelpanel, false)) {
-				message_keyword_ding |= true;
-				message_keyword_flash |= true;
+				message_ding |= true;
+				message_flash |= true;
 			}
 			channelpanel->setHasNewMessages(true);
 			if(panelname.startsWith("PM")) {
@@ -2643,14 +2630,20 @@ void flist_messenger::messageMessage(FMessage message)
 			channelpanel->updateButtonColor();
 			break;
 		case MESSAGE_TYPE_REPORT:
+			soundtype = FSound::SOUND_MODALERT;
+			break;
+		case MESSAGE_TYPE_BROADCAST:
+			soundtype = FSound::SOUND_ATTENTION;
+			break;
+		case MESSAGE_TYPE_LOGIN:
+		case MESSAGE_TYPE_CHANNEL_DESCRIPTION:
+		case MESSAGE_TYPE_CHANNEL_MODE:
+		case MESSAGE_TYPE_CHANNEL_INVITE:
 		case MESSAGE_TYPE_ERROR:
 		case MESSAGE_TYPE_SYSTEM:
-		case MESSAGE_TYPE_BROADCAST:
 		case MESSAGE_TYPE_FEEDBACK:
-			break;
 		case MESSAGE_TYPE_KICK:
 		case MESSAGE_TYPE_KICKBAN:
-			break;
 		case MESSAGE_TYPE_IGNORE_UPDATE:
 			break;
 		default:
@@ -2661,60 +2654,17 @@ void flist_messenger::messageMessage(FMessage message)
 			chatview->append(message.getFormattedMessage());
 		}
 	}
-	//if(session && message.getSourceCharacter() == session->character) {
-	//	//Message originated from the user, so don't play any sounds.
-	//	return;
-	//}
 
-	FSound::soundName soundtype = FSound::SOUND_NONE;
-	bool flash = message_rpad_flash || message_channel_flash || message_character_flash || message_keyword_flash;
-
-	if(message_rpad_ding || message_channel_ding || message_character_ding || message_keyword_ding) {
+	if(message_ding) {
 		if(session && message.getSourceCharacter() != session->character) {
 			soundtype = FSound::SOUND_ATTENTION;
 		}
 	}
 
-	switch(message.getMessageType()) {
-	case MESSAGE_TYPE_LOGIN:
-	case MESSAGE_TYPE_ONLINE:
-	case MESSAGE_TYPE_OFFLINE:
-	case MESSAGE_TYPE_STATUS:
-	case MESSAGE_TYPE_CHANNEL_DESCRIPTION:
-	case MESSAGE_TYPE_CHANNEL_MODE:
-	case MESSAGE_TYPE_CHANNEL_INVITE:
-	case MESSAGE_TYPE_JOIN:
-	case MESSAGE_TYPE_LEAVE:
-		break;
-	case MESSAGE_TYPE_ROLL:
-	case MESSAGE_TYPE_RPAD:
-	case MESSAGE_TYPE_CHAT:
-		//Detection is handled above.
-		break;
-	case MESSAGE_TYPE_REPORT:
-		soundtype = FSound::SOUND_MODALERT;
-		break;
-	case MESSAGE_TYPE_ERROR:
-		break;
-	case MESSAGE_TYPE_SYSTEM:
-	case MESSAGE_TYPE_BROADCAST:
-		soundtype = FSound::SOUND_ATTENTION;
-		break;
-	case MESSAGE_TYPE_FEEDBACK:
-		break;
-	case MESSAGE_TYPE_KICK:
-	case MESSAGE_TYPE_KICKBAN:
-		break;
-	case MESSAGE_TYPE_IGNORE_UPDATE:
-		break;
-	default:
-		debugMessage("Unhandled sound for message type " + QString::number(message.getMessageType()) + " for message '" + message.getFormattedMessage() + "'.");
-	}
-	//debugMessage(QString("Sound: %1").arg(soundtype));
 	if(soundtype != FSound::SOUND_NONE && settings->getPlaySounds()) {
 		soundPlayer.play(soundtype);
 	}
-	if(flash) {
+	if(message_flash) {
 		//todo: Special handling on message type?
 		QString reason(message.getFormattedMessage());
 		flashApp(reason);
@@ -2739,10 +2689,6 @@ void flist_messenger::messageMany(QList<QString> &panelnames, QString message, M
 			break;
 		case MESSAGE_TYPE_ONLINE:
 		case MESSAGE_TYPE_OFFLINE:
-			if(!settings->getShowOnlineOfflineMessage()) {
-				continue;
-			}
-			break;
 		case MESSAGE_TYPE_STATUS:
 			if(!settings->getShowOnlineOfflineMessage()) {
 				continue;
@@ -2750,7 +2696,6 @@ void flist_messenger::messageMany(QList<QString> &panelnames, QString message, M
 			break;
 		case MESSAGE_TYPE_CHANNEL_DESCRIPTION:
 		case MESSAGE_TYPE_CHANNEL_MODE:
-			break;
 		case MESSAGE_TYPE_CHANNEL_INVITE:
 			break;
 		case MESSAGE_TYPE_JOIN:
@@ -2774,10 +2719,8 @@ void flist_messenger::messageMany(QList<QString> &panelnames, QString message, M
 		case MESSAGE_TYPE_SYSTEM:
 		case MESSAGE_TYPE_BROADCAST:
 		case MESSAGE_TYPE_FEEDBACK:
-			break;
 		case MESSAGE_TYPE_KICK:
 		case MESSAGE_TYPE_KICKBAN:
-			break;
 		case MESSAGE_TYPE_IGNORE_UPDATE:
 			break;
 		default:
@@ -2815,10 +2758,8 @@ void flist_messenger::messageMany(QList<QString> &panelnames, QString message, M
 			soundPlayer.play(FSound::SOUND_ATTENTION);
 			break;
 		case MESSAGE_TYPE_FEEDBACK:
-			break;
 		case MESSAGE_TYPE_KICK:
 		case MESSAGE_TYPE_KICKBAN:
-			break;
 		case MESSAGE_TYPE_IGNORE_UPDATE:
 			break;
 		case MESSAGE_TYPE_NOTE:

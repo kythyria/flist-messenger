@@ -35,17 +35,6 @@ enum TypingStatus {
 	TYPING_STATUS_PAUSED,
 };
 
-/*enum ChannelMode {
-	//TODO: Use the unknown value for stuff
-	CHANNEL_MODE_UNKNOWN,
-	CHANNEL_MODE_CHAT,
-	CHANNEL_MODE_ADS,
-	CHANNEL_MODE_BOTH
-};
-#define CHANNEL_MODE_ENUM "unknown, chat, ads, both"
-#define CHANNEL_MODE_DEFAULT "unknown"
-extern EnumLookup ChannelModeEnum;*/
-
 // These two functions are auto-implemented in flist_enums.cpp, and convert
 // between FooEnum::SomeVal and QString("SomeVal").
 template<typename T> QString enumToKey(T p);
