@@ -7,7 +7,7 @@ public:
 	FMessageData() :
 		timestamp(QDateTime::currentDateTime()),
 		message(),
-		messagetype(MESSAGE_TYPE_ERROR),
+		messagetype(MessageType::Error),
 		sessionid(),
 		destinationchannels(),
 		destinationcharacters(),

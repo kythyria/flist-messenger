@@ -17,7 +17,9 @@
 	    return enum_type##_strings[(int)p];                 \
 	}                                                       \
 	template<> enum_type keyToEnum<enum_type>(QString s, enum_type defval) { \
-	    return enum_type##_ints.value(s, defval); \
-	}                                             
+	    return enum_type##_ints.value(s, defval);      \
+	}                                                  \
+	QDebug operator<<(QDebug dbg, const enum_type val) \
+	{ dbg << #enum_type "::" << enumToKey(val); return dbg.maybeSpace(); }
 
 #include "flist_enums.def"

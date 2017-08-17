@@ -8,6 +8,32 @@
 // The scoping is why X(Y,label) rather than just X(label): the name of the enum
 // needs to be passed around so that it can actually be used.
 
+#define ENUMDEF_MessageType(X,Y) \
+	X(Y,Login)              \
+	X(Y,Online)             \
+	X(Y,Offline)            \
+	X(Y,Status)             \
+	X(Y,ChannelDescription) \
+	X(Y,ChannelMode)        \
+	X(Y,Join)               \
+	X(Y,Leave)              \
+	X(Y,ChannelInvite)      \
+	X(Y,Kick)               \
+	X(Y,KickBan)            \
+	X(Y,IgnoreUpdate)       \
+	X(Y,System)             \
+	X(Y,Report)             \
+	X(Y,Error)              \
+	X(Y,Broadcast)          \
+	X(Y,Feedback)           \
+	X(Y,RpAd)               \
+	X(Y,Chat)               \
+	X(Y,DiceRoll)           \
+	X(Y,Note)               \
+	X(Y,Bookmark)           \
+	X(Y,Friend)             
+ENUMDEF_MAKE(MessageType)
+
 #define ENUMDEF_BufferLabelColor(X,Y) \
 	X(Y,Quiescent)        \
 	X(Y,StatusChanged)    \

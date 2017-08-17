@@ -234,10 +234,10 @@ void FSession::socketSslError(QList<QSslError> sslerrors)
 		errorstring += error.errorString();
 	}
 	//msgbox.critical ( this, "SSL ERROR DURING LOGIN!", errorstring );
-	//messageSystem(0, errorstring, MESSAGE_TYPE_ERROR);
+	//messageSystem(0, errorstring, MessageType::Error);
 	QString message = QString("SSL Socket Error: %1").arg(errorstring);
 	//todo: This should really display message box.
-	account->ui->messageSystem(this, message, MESSAGE_TYPE_ERROR);
+	account->ui->messageSystem(this, message, MessageType::Error);
 	debugMessage(message);
 }
 
@@ -549,12 +549,12 @@ COMMAND(SFC)
 					  "%2<br />"
 					  "%3" 
 					  "<a href=\"#CSA-%4\"><b>Confirm Alert</b></a>").arg(character).arg(report).arg(logstring).arg(callid);
-		account->ui->messageSystem(this, message, MESSAGE_TYPE_REPORT);
+		account->ui->messageSystem(this, message, MessageType::Report);
 	} else if(action == "confirm") {
 		QString moderator = nodes.at("moderator").as_string().c_str();
 		QString character = nodes.at("character").as_string().c_str();
 		QString message = QString("<b>%1</b> is handling <b>%2</b>'s report.").arg(moderator).arg(character);
-		account->ui->messageSystem(this, message, MESSAGE_TYPE_REPORT);
+		account->ui->messageSystem(this, message, MessageType::Report);
 	} else {
 		debugMessage(QString("Received a staff report with an action of '%1' but we don't know how to handle it. %2").arg(action).arg(QString::fromStdString(rawpacket)));
 	}
@@ -595,7 +595,7 @@ COMMAND(CIU)
 	}
 	//todo: Filter the title for problem BBCode characters.
 	QString message = makeMessage(QString("/me has invited you to [session=%1]%2[/session].*").arg(channeltitle).arg(channelname), charactername, character, 0, "<font color=\"yellow\"><b>Channel invite:</b></font> ", "");
-	account->ui->messageSystem(this, message, MESSAGE_TYPE_CHANNEL_INVITE);
+	account->ui->messageSystem(this, message, MessageType::ChannelInvite);
 }
 COMMAND(ICH)
 {
@@ -720,7 +720,7 @@ COMMAND(RMO)
 	QString message = "[session=%1]%2[/session]'s mode has been changed to: %3";
 	message = bbcodeparser->parse(message).arg(channel->getTitle()).arg(channelname).arg(modedescription);
 	account->ui->setChannelMode(this, channelname, channel->mode);
-	account->ui->messageChannel(this, channelname, message, MESSAGE_TYPE_CHANNEL_MODE, true);
+	account->ui->messageChannel(this, channelname, message, MessageType::ChannelMode, true);
 }
 
 COMMAND(NLN)
@@ -843,11 +843,11 @@ COMMAND(CBUCKU)
 	}
 	QString message = QString("<b>%1</b> has %4 <b>%2</b> from %3.").arg(operatorname).arg(charactername).arg(channel->getTitle()).arg(kicktype);
 	if(charactername == character) {
-		account->ui->messageChannel(this, channelname, message, banned ? MESSAGE_TYPE_KICKBAN : MESSAGE_TYPE_KICK, true, true);
+		account->ui->messageChannel(this, channelname, message, banned ? MessageType::KickBan : MessageType::Kick, true, true);
 		channel->removeCharacter(charactername);
 		channel->leave();
 	} else {
-		account->ui->messageChannel(this, channelname, message, banned ? MESSAGE_TYPE_KICKBAN : MESSAGE_TYPE_KICK, channel->isCharacterOperator(character), false);
+		account->ui->messageChannel(this, channelname, message, banned ? MessageType::KickBan : MessageType::Kick, channel->isCharacterOperator(character), false);
 		channel->removeCharacter(charactername);
 	}
 }
@@ -917,7 +917,7 @@ COMMAND(BRO)
 	//Broadcast message.
 	//BRO {"message": "Message Text"}
 	QString message = nodes.at("message").as_string().c_str();
-	account->ui->messageAll(this, QString("<b>Broadcast message:</b> %1").arg(bbcodeparser->parse(message)), MESSAGE_TYPE_SYSTEM);
+	account->ui->messageAll(this, QString("<b>Broadcast message:</b> %1").arg(bbcodeparser->parse(message)), MessageType::System);
 }
 COMMAND(SYS)
 {
@@ -925,7 +925,7 @@ COMMAND(SYS)
 	//System message
 	//SYS {"message": "Message Text"}
 	QString message = nodes.at("message").as_string().c_str();
-	account->ui->messageSystem(this, QString("<b>System message:</b> %1").arg(message), MESSAGE_TYPE_SYSTEM);
+	account->ui->messageSystem(this, QString("<b>System message:</b> %1").arg(message), MessageType::System);
 }
 
 COMMAND(CON)
@@ -935,7 +935,7 @@ COMMAND(CON)
 	//CON {"count": usercount}
 	QString count = nodes.at("count").as_string().c_str();
 	//The message doesn't handle the plural case correctly, but that only happens on the test server.
-	account->ui->messageSystem(this, QString("%1 users are currently connected.").arg(count), MESSAGE_TYPE_LOGIN);
+	account->ui->messageSystem(this, QString("%1 users are currently connected.").arg(count), MessageType::Login);
 }
 COMMAND(HLO)
 {
@@ -943,7 +943,7 @@ COMMAND(HLO)
 	//Server hello. Sent during the initial connection traffic after identification.
 	//HLO {"message": "Server Message"}
 	QString message = nodes.at("message").as_string().c_str();
-	account->ui->messageSystem(this, QString("<b>%1</b>").arg(message), MESSAGE_TYPE_LOGIN);
+	account->ui->messageSystem(this, QString("<b>%1</b>").arg(message), MessageType::Login);
 	foreach(QString channelname, autojoinchannels) {
 		joinChannel(channelname);
 	}
@@ -955,7 +955,7 @@ COMMAND(IDN)
 	QString charactername = nodes.at("character").as_string().c_str();
 
 	QString message = QString("<b>%1</b> connected.").arg(charactername);
-	account->ui->messageSystem(this, message, MESSAGE_TYPE_LOGIN);
+	account->ui->messageSystem(this, message, MessageType::Login);
 	if(charactername != character) {
 		debugMessage(QString("[SERVER BUG] Received IDN response for '%1', but this session is for '%2'. %3").arg(charactername).arg(character).arg(QString::fromStdString(rawpacket)));
 	}
@@ -1109,7 +1109,7 @@ COMMAND(LRP)
 		return;
 	}
 	QString messagefinal = makeMessage(message, charactername, character, channel, "<font color=\"green\"><b>Roleplay ad by</b></font> ", "");
-	FMessage fmessage(messagefinal, MESSAGE_TYPE_RPAD);
+	FMessage fmessage(messagefinal, MessageType::RpAd);
 	fmessage.toChannel(channelname).fromChannel(channelname).fromCharacter(charactername).fromSession(sessionid);
 	account->ui->messageMessage(fmessage);
 }
@@ -1136,7 +1136,7 @@ COMMAND(MSG)
 		return;
 	}
 	QString messagefinal = makeMessage(message, charactername, character, channel);
-	FMessage fmessage(messagefinal, MESSAGE_TYPE_CHAT);
+	FMessage fmessage(messagefinal, MessageType::Chat);
 	fmessage.toChannel(channelname).fromChannel(channelname).fromCharacter(charactername).fromSession(sessionid);
 	account->ui->messageMessage(fmessage);
 }
@@ -1159,7 +1159,7 @@ COMMAND(PRI)
 	
 	QString messagefinal = makeMessage(message, charactername, character);
 	account->ui->addCharacterChat(this, charactername);
-	FMessage fmessage(messagefinal, MESSAGE_TYPE_CHAT);
+	FMessage fmessage(messagefinal, MessageType::Chat);
 	fmessage.toCharacter(charactername).fromCharacter(charactername).fromSession(sessionid);
 	account->ui->messageMessage(fmessage);
 }
@@ -1196,11 +1196,11 @@ COMMAND(RLL)
 			return;
 		}
 		//todo: Maybe extract character name and make it a link and colored like normal.
-		account->ui->messageChannel(this, channelname, bbcodeparser->parse(message), MESSAGE_TYPE_ROLL, true);
+		account->ui->messageChannel(this, channelname, bbcodeparser->parse(message), MessageType::DiceRoll, true);
 	} else {
 		account->ui->addCharacterChat(this, charactername);
 		QString messagefinal = bbcodeparser->parse(message);
-		FMessage fmessage(messagefinal, MESSAGE_TYPE_ROLL);
+		FMessage fmessage(messagefinal, MessageType::DiceRoll);
 		fmessage.toCharacter(charactername).fromCharacter(this->character).fromSession(sessionid);
 		account->ui->messageMessage(fmessage);
 	}
@@ -1355,10 +1355,10 @@ COMMAND(RTB)
 			.arg(getCharacterHtml(charactername))
 			.arg(id)
 			.arg(subject);
-		FMessage fmessage(message, MESSAGE_TYPE_NOTE);
+		FMessage fmessage(message, MessageType::Note);
 		fmessage.toUser().toCharacter(charactername).fromCharacter(charactername).fromSession(sessionid);
 		account->ui->messageMessage(fmessage);
-		//account->ui->messageSystem(this, message, MESSAGE_TYPE_NOTE);
+		//account->ui->messageSystem(this, message, MessageType::Note);
 	} else if(type == "trackadd") {
 		QString charactername = nodes.at("name").as_string().c_str();
 		if(!friendslist.contains(charactername)) {
@@ -1367,27 +1367,27 @@ COMMAND(RTB)
 		}
 		QString message = "Bookmark update: %1 has been added to your bookmarks."; //todo: escape characters?
 		message = message.arg(getCharacterHtml(charactername));
-		FMessage fmessage(message, MESSAGE_TYPE_BOOKMARK);
+		FMessage fmessage(message, MessageType::Bookmark);
 		fmessage.toUser().toCharacter(charactername).fromCharacter(charactername).fromSession(sessionid);
 		account->ui->messageMessage(fmessage);
-		//account->ui->messageSystem(this, message, MESSAGE_TYPE_BOOKMARK);
+		//account->ui->messageSystem(this, message, MessageType::Bookmark);
 	} else if(type == "trackrem") {
 		//todo: Update bookmark list? (Removing has the complication in that bookmarks and friends aren't distinguished and multiple instances of friends may exist.)
 		QString charactername = nodes.at("name").as_string().c_str();
 		QString message = "Bookmark update: %1 has been removed from your bookmarks."; //todo: escape characters?
 		message = message.arg(getCharacterHtml(charactername));
-		FMessage fmessage(message, MESSAGE_TYPE_BOOKMARK);
+		FMessage fmessage(message, MessageType::Bookmark);
 		fmessage.toUser().toCharacter(charactername).fromCharacter(charactername).fromSession(sessionid);
 		account->ui->messageMessage(fmessage);
-		//account->ui->messageSystem(this, message, MESSAGE_TYPE_BOOKMARK);
+		//account->ui->messageSystem(this, message, MessageType::Bookmark);
 	} else if(type == "friendrequest") {
 		QString charactername = nodes.at("name").as_string().c_str();
 		QString message = "Friend update: %1 has requested to be friends with one of your characters. Visit <a href=\"%2\">%2</a> to view the request on F-List."; //todo: escape characters?
 		message = message.arg(charactername).arg("https://www.f-list.net/messages.php?show=friends");
-		FMessage fmessage(message, MESSAGE_TYPE_FRIEND);
+		FMessage fmessage(message, MessageType::Friend);
 		fmessage.toUser().toCharacter(charactername).fromCharacter(charactername).fromSession(sessionid);
 		account->ui->messageMessage(fmessage);
-		//account->ui->messageSystem(this, message, MESSAGE_TYPE_FRIEND);
+		//account->ui->messageSystem(this, message, MessageType::Friend);
 	} else if(type == "friendadd") {
 		QString charactername = nodes.at("name").as_string().c_str();
 		if(!friendslist.contains(charactername)) {
@@ -1396,23 +1396,23 @@ COMMAND(RTB)
 		}
 		QString message = "Friend update: %1 has become friends with one of your characters."; //todo: escape characters?
 		message = message.arg(getCharacterHtml(charactername));
-		FMessage fmessage(message, MESSAGE_TYPE_FRIEND);
+		FMessage fmessage(message, MessageType::Friend);
 		fmessage.toUser().toCharacter(charactername).fromCharacter(charactername).fromSession(sessionid);
 		account->ui->messageMessage(fmessage);
-		//account->ui->messageSystem(this, message, MESSAGE_TYPE_FRIEND);
+		//account->ui->messageSystem(this, message, MessageType::Friend);
 	} else if(type == "friendremove") {
 		//todo: Update bookmark/friend list? (Removing has the complication in that bookmarks and friends aren't distinguished and multiple instances of friends may exist.)
 		QString charactername = nodes.at("name").as_string().c_str();
 		QString message = "Friend update: %1 was removed as a friend from one of your characters."; //todo: escape characters?
 		message = message.arg(getCharacterHtml(charactername));
-		FMessage fmessage(message, MESSAGE_TYPE_FRIEND);
+		FMessage fmessage(message, MessageType::Friend);
 		fmessage.toUser().toCharacter(charactername).fromCharacter(charactername).fromSession(sessionid);
 		account->ui->messageMessage(fmessage);
-		//account->ui->messageSystem(this, message, MESSAGE_TYPE_FRIEND);
+		//account->ui->messageSystem(this, message, MessageType::Friend);
 	} else {
 		QString message = "Received an unknown/unhandled Real Time Bridge message of type \"%1\". Received packet: %2"; //todo: escape characters?
 		message = message.arg(type).arg(rawpacket.c_str());
-		account->ui->messageSystem(this, message, MESSAGE_TYPE_ERROR);
+		account->ui->messageSystem(this, message, MessageType::Error);
 	}
 	//debugMessage(QString("Real time bridge: %1").arg(QString::fromStdString(rawpacket)));
 }
@@ -1424,7 +1424,7 @@ COMMAND(ZZZ)
 	//ZZZ {"message": "???"}
 	//This command is not documented.
 	QString message = nodes.at("message").as_string().c_str();
-	account->ui->messageSystem(this, QString("<b>Debug Reply:</b> %1").arg(message), MESSAGE_TYPE_SYSTEM);
+	account->ui->messageSystem(this, QString("<b>Debug Reply:</b> %1").arg(message), MessageType::System);
 }
 
 COMMAND(ERR)
@@ -1434,7 +1434,7 @@ COMMAND(ERR)
 	QString errornumberstring = nodes.at("number").as_string().c_str();
 	QString errormessage = nodes.at("message").as_string().c_str();
 	QString message = QString("<b>Error %1: </b> %2").arg(errornumberstring).arg(errormessage);
-	account->ui->messageSystem(this, message, MESSAGE_TYPE_ERROR);
+	account->ui->messageSystem(this, message, MessageType::Error);
 	bool ok;
 	int errornumber = errornumberstring.toInt(&ok);
 	if(!ok) {
@@ -1484,15 +1484,15 @@ void FSession::sendChannelMessage(QString channelname, QString message)
 	//Confirm channel is known, joined and has the right permissions.
 	FChannel *channel = getChannel(channelname);
 	if(!channel) {
-		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel is unknown or has never been joined. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
+		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel is unknown or has never been joined. Message: %2").arg(channelname).arg(message), MessageType::Feedback);
 		return;
 	}
 	if(!channel->isJoined()) {
-		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but you are not currently in the channel. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
+		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but you are not currently in the channel. Message: %2").arg(channelname).arg(message), MessageType::Feedback);
 		return;
 	}
 	if(channel->mode == ChannelMode::Ads) {
-		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel only allows advertisements. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
+		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel only allows advertisements. Message: %2").arg(channelname).arg(message), MessageType::Feedback);
 		return;
 	}
 	JSONNode nodes;
@@ -1503,7 +1503,7 @@ void FSession::sendChannelMessage(QString channelname, QString message)
         message.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;");
 	//Send the message to the UI now.
 	QString messagefinal = makeMessage(message, character, getCharacter(character), channel);
-	FMessage fmessage(messagefinal, MESSAGE_TYPE_CHAT);
+	FMessage fmessage(messagefinal, MessageType::Chat);
 	fmessage.toChannel(channelname).fromChannel(channelname).fromCharacter(this->character).fromSession(sessionid);
 	account->ui->messageMessage(fmessage);
 }
@@ -1512,15 +1512,15 @@ void FSession::sendChannelAdvertisement(QString channelname, QString message)
 	//Confirm channel is known, joined and has the right permissions.
 	FChannel *channel = getChannel(channelname);
 	if(!channel) {
-		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel is unknown or has never been joined. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
+		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel is unknown or has never been joined. Message: %2").arg(channelname).arg(message), MessageType::Feedback);
 		return;
 	}
 	if(!channel->isJoined()) {
-		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but you are not currently in the channel. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
+		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but you are not currently in the channel. Message: %2").arg(channelname).arg(message), MessageType::Feedback);
 		return;
 	}
 	if(channel->mode == ChannelMode::Chat) {
-		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel does not allow advertisements. Message: %2").arg(channelname).arg(message), MESSAGE_TYPE_FEEDBACK);
+		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but the channel does not allow advertisements. Message: %2").arg(channelname).arg(message), MessageType::Feedback);
 		return;
 	}
 	JSONNode nodes;
@@ -1531,7 +1531,7 @@ void FSession::sendChannelAdvertisement(QString channelname, QString message)
         message.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;");
 	//Send the message to the UI now.
 	QString messagefinal = makeMessage(message, character, getCharacter(character), channel, "<font color=\"green\"><b>Roleplay ad by</font> ", "");
-	FMessage fmessage(messagefinal, MESSAGE_TYPE_RPAD);
+	FMessage fmessage(messagefinal, MessageType::RpAd);
 	fmessage.toChannel(channelname).fromChannel(channelname).fromCharacter(this->character).fromSession(sessionid);
 	account->ui->messageMessage(fmessage);
 }
@@ -1539,11 +1539,11 @@ void FSession::sendCharacterMessage(QString charactername, QString message)
 {
 	//Confirm character is known, online and we are not ignoring them.
 	if(!isCharacterOnline(charactername)) {
-		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but they are offline or unknown. Message: %2").arg(charactername).arg(message), MESSAGE_TYPE_FEEDBACK);
+		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but they are offline or unknown. Message: %2").arg(charactername).arg(message), MessageType::Feedback);
 		return;
 	}
 	if(isCharacterIgnored(charactername)) {
-		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but YOU are ignoring them. Message: %2").arg(charactername).arg(message), MESSAGE_TYPE_FEEDBACK);
+		account->ui->messageSystem(this, QString("Tried to send a message to '%1' but YOU are ignoring them. Message: %2").arg(charactername).arg(message), MessageType::Feedback);
 		return;
 	}
 	//Make packet and send it.
@@ -1556,7 +1556,7 @@ void FSession::sendCharacterMessage(QString charactername, QString message)
         message.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;");
 	//Send the message to the UI now.
 	QString messagefinal = makeMessage(message, this->character, getCharacter(this->character));
-	FMessage fmessage(messagefinal, MESSAGE_TYPE_CHAT);
+	FMessage fmessage(messagefinal, MessageType::Chat);
 	fmessage.toCharacter(charactername).fromCharacter(this->character).fromSession(sessionid);
 	account->ui->messageMessage(fmessage);
 }

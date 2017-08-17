@@ -1253,7 +1253,7 @@ void flist_messenger::socketError ( QAbstractSocket::SocketError socketError )
         if ( currentPanel )
         {
                 QString errorstring = "<b>Socket Error: </b>" + sockErrorStr;
-		messageSystem(0, errorstring, MESSAGE_TYPE_ERROR);
+		messageSystem(0, errorstring, MessageType::Error);
         }
         else
                 QMessageBox::critical ( this, "Socket Error!", "Socket Error: " + sockErrorStr );
@@ -1273,7 +1273,7 @@ void flist_messenger::socketSslError (QList<QSslError> sslerrors ) {
                 errorstring += error.errorString();
         }
         msgbox.critical ( this, "SSL ERROR DURING LOGIN!", errorstring );
-	messageSystem(0, errorstring, MESSAGE_TYPE_ERROR);
+	messageSystem(0, errorstring, MessageType::Error);
 }
 
 //todo: Calls to sendWS() are to be replaced with appropriate calls to FSession methods.
@@ -1302,7 +1302,7 @@ void flist_messenger::changeStatus (QString status, QString statusmsg )
 
 	QString output = QString ( "Status changed successfully." );
 
-	messageSystem(0, output, MESSAGE_TYPE_FEEDBACK);
+	messageSystem(0, output, MessageType::Feedback);
 }
 
 void flist_messenger::tb_channelRightClicked ( const QPoint & point )
@@ -1335,7 +1335,7 @@ void flist_messenger::usersCommand()
         QString msg;
 	FSession *session = account->getSession(currentPanel->getSessionID());
 	msg.sprintf("<b>%d users online.</b>", session->getCharacterCount());
-	messageSystem(session, msg, MESSAGE_TYPE_FEEDBACK);
+	messageSystem(session, msg, MessageType::Feedback);
 }
 void flist_messenger::inputChanged()
 {
@@ -1496,12 +1496,12 @@ void flist_messenger::to_btnSubmitClicked()
 
 	if (! ok || minutes <= 0 || 90 < minutes) {
 		QString error("Wrong length.");
-		messageSystem(0, error, MESSAGE_TYPE_FEEDBACK);
+		messageSystem(0, error, MessageType::Feedback);
 	}
 	else if (who.simplified() == "" || why.simplified() == "")
 	{
 		QString error("Didn't fill out all fields.");
-		messageSystem(0, error, MESSAGE_TYPE_FEEDBACK);
+		messageSystem(0, error, MessageType::Feedback);
 	} else {
 		account->getSessionByCharacter(charName)->sendCharacterTimeout(who.simplified(), minutes, why.simplified());
 	}
@@ -1592,12 +1592,12 @@ void flist_messenger::openPMTab ( QString character )
 	FSession *session = account->getSession(currentPanel->getSessionID());
 	if(character.toLower() == session->character.toLower()) {
                 QString msg = "You can't PM yourself!";
-		messageSystem(session, msg, MESSAGE_TYPE_FEEDBACK);
+		messageSystem(session, msg, MessageType::Feedback);
                 return;
         }
 	if(!session->isCharacterOnline(character)) {
                 QString msg = "That character is not logged in.";
-		messageSystem(session, msg, MESSAGE_TYPE_FEEDBACK);
+		messageSystem(session, msg, MessageType::Feedback);
                 return;
         }
 
@@ -1645,16 +1645,16 @@ void flist_messenger::btnSendAdvClicked()
         }
 	FSession *session = account->getSession(currentPanel->getSessionID());
 	if(inputText.length() == 0) {
-		messageSystem(session, QString("<b>Error:</b> No message."), MESSAGE_TYPE_FEEDBACK);
+		messageSystem(session, QString("<b>Error:</b> No message."), MessageType::Feedback);
 		return;
 	}
 	if ( currentPanel == console || currentPanel->getMode() == ChannelMode::Chat || currentPanel->type() == FChannel::CHANTYPE_PM ) {
-		messageSystem(session, QString("<b>Error:</b> Can't advertise here."), MESSAGE_TYPE_FEEDBACK);
+		messageSystem(session, QString("<b>Error:</b> Can't advertise here."), MessageType::Feedback);
 		return;
 	}
 	//todo: Use the configuration stored in the session.
 	if ( inputText.length() > flist_messenger::BUFFERPUB ) {
-		messageSystem(session, QString("<b>Error:</b> Message exceeds the maximum number of characters."), MESSAGE_TYPE_FEEDBACK);
+		messageSystem(session, QString("<b>Error:</b> Message exceeds the maximum number of characters."), MessageType::Feedback);
 		return;
 	}
 	plainTextEdit->clear();
@@ -1687,7 +1687,7 @@ void flist_messenger::parseInput()
         ownText.replace ( '&', amp ).replace ( '<', lt ).replace ( '>', gt );
         if ( inputText.length() == 0 )
         {
-		messageSystem(session, QString("<b>Error:</b> No message."), MESSAGE_TYPE_FEEDBACK);
+		messageSystem(session, QString("<b>Error:</b> No message."), MessageType::Feedback);
                 return;
         }
         if ( currentPanel == 0 )
@@ -1706,7 +1706,7 @@ void flist_messenger::parseInput()
 
 	//todo: Should the maximum length only apply to stuff tagged 'plainmessage'?
 	if(inputText.length() > buffermaxlength) {
-		messageSystem(session, QString("<B>Error:</B> Message exceeds the maximum number of characters."), MESSAGE_TYPE_FEEDBACK);
+		messageSystem(session, QString("<B>Error:</B> Message exceeds the maximum number of characters."), MessageType::Feedback);
 		return;
 	}
 
@@ -1732,7 +1732,7 @@ void flist_messenger::parseInput()
 				session->wsRecv(ownText.mid(11).toStdString());
 				success = true;
 			} else {
-				messageSystem(session, QString("Can't do '/debugrecv', as there is no session associated with this console."), MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, QString("Can't do '/debugrecv', as there is no session associated with this console."), MessageType::Feedback);
 			}
 		} else if(slashcommand == "/debugsend") {
 			//Send a packet directly to the server. The packet is not validated.
@@ -1741,7 +1741,7 @@ void flist_messenger::parseInput()
 				session->wsSend(send);
 				success = true;
 			} else {
-				messageSystem(session, QString("Can't do '/debugsend', as there is no session associated with this console."), MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, QString("Can't do '/debugsend', as there is no session associated with this console."), MessageType::Feedback);
 			}
 		}
                 else if ( slashcommand == "/me" )
@@ -1764,7 +1764,7 @@ void flist_messenger::parseInput()
                 {
 			//todo: Detect other console types.
 			if(currentPanel == console || !session) {
-				messageSystem(session, QString("Can't close and leave, as this is a console."), MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, QString("Can't close and leave, as this is a console."), MessageType::Feedback);
 				success = false;
 			} else {
 				leaveChannelPanel(currentPanel->getPanelName());
@@ -1809,7 +1809,7 @@ void flist_messenger::parseInput()
 				if (!session->isCharacterIgnored(character))
 				{
 					QString out = QString ( "This character is not in your ignore list." );
-					messageSystem(session, out, MESSAGE_TYPE_FEEDBACK);
+					messageSystem(session, out, MessageType::Feedback);
 				}
 				else
 				{
@@ -1912,7 +1912,7 @@ void flist_messenger::parseInput()
                                 out = "This command is only for channels!";
                                 break;
                         }
-			messageSystem(session, out, MESSAGE_TYPE_FEEDBACK);
+			messageSystem(session, out, MessageType::Feedback);
                         success = true;
                 }
 		else if ( slashcommand == "/unban" )
@@ -1928,7 +1928,7 @@ void flist_messenger::parseInput()
 		else if (slashcommand == "/getdescription")
 		{
 			QString desc = currentPanel->description();
-			messageSystem(session, desc, MESSAGE_TYPE_FEEDBACK);
+			messageSystem(session, desc, MessageType::Feedback);
 			success = true;
 		}
 		else if ( slashcommand == "/setdescription" )
@@ -1947,13 +1947,13 @@ void flist_messenger::parseInput()
 			if(parts.count() < 2)
 			{
 				errmsg = "Must supply a character name";
-				messageSystem(session, errmsg, MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, errmsg, MessageType::Feedback);
 				success = false;
 			}
 			else if(!channel)
 			{
 				errmsg = "You must be in a channel to set the owner";
-				messageSystem(session, errmsg, MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, errmsg, MessageType::Feedback);
 			}
 			else
 			{
@@ -1976,7 +1976,7 @@ void flist_messenger::parseInput()
 			if ( isInt == false )
 			{
 				QString err = "Time is not a number.";
-				messageSystem(session, err, MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, err, MessageType::Feedback);
 			}
 			else
 			{
@@ -2015,7 +2015,7 @@ void flist_messenger::parseInput()
 			if (mode == ChannelMode::Unknown)
 			{
 				QString err("Correct usage: /setmode &lt;chat|ads|both&gt;");
-				messageSystem(session, err, MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, err, MessageType::Feedback);
 			}
 			else if (currentPanel->isOp(session->getCharacter(session->character)) || session->isCharacterOperator(session->character))
 			{
@@ -2025,7 +2025,7 @@ void flist_messenger::parseInput()
 			else
 			{
 				QString err("You can only do that in channels you moderate.");
-				messageSystem(session, err, MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, err, MessageType::Feedback);
 				success = true;
 			}
 		}
@@ -2034,7 +2034,7 @@ void flist_messenger::parseInput()
 			if (currentPanel == 0 || currentPanel->type() == FChannel::CHANTYPE_CONSOLE || currentPanel->type() == FChannel::CHANTYPE_PM)
 			{
 				QString err("You can't use that in this panel.");
-				messageSystem(session, err, MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, err, MessageType::Feedback);
 			}
 			else
 			{
@@ -2047,7 +2047,7 @@ void flist_messenger::parseInput()
 			if (currentPanel == 0 || currentPanel->type() == FChannel::CHANTYPE_CONSOLE)
 			{
 				QString err("You can't use that in this panel.");
-				messageSystem(session, err, MESSAGE_TYPE_FEEDBACK);
+				messageSystem(session, err, MessageType::Feedback);
 			}
 			else
 			{
@@ -2072,7 +2072,7 @@ void flist_messenger::parseInput()
                         JSONNode* node = currentPanel->toJSON();
                         output += node->write().c_str();
                         output += "[/noparse]";
-			messageSystem(session, output, MESSAGE_TYPE_FEEDBACK);
+			messageSystem(session, output, MessageType::Feedback);
                         delete node;
                         success = true;
         }
@@ -2083,13 +2083,13 @@ void flist_messenger::parseInput()
             QString stylesheet = QLatin1String(stylefile.readAll());
             setStyleSheet(stylesheet);
             QString output = "Refreshed stylesheet from default.qss";
-	    messageSystem(session, output, MESSAGE_TYPE_FEEDBACK);
+	    messageSystem(session, output, MessageType::Feedback);
             success = true;
         }
                 else if (slashcommand == "/channeltostring")
                 {
                         QString* output = currentPanel->toString();
-			messageSystem(session, *output, MESSAGE_TYPE_FEEDBACK);
+			messageSystem(session, *output, MessageType::Feedback);
                         success = true;
                         delete output;
                 }
@@ -2264,7 +2264,7 @@ void flist_messenger::addChannelCharacter(FSession *session, QString channelname
 				//Only refresh the userlist if the panel has focus and notify is set.
 				refreshUserlist();
 			}
-			messageChannel(session, channelname, "<b>" + charactername +"</b> has joined the channel", MESSAGE_TYPE_JOIN);
+			messageChannel(session, channelname, "<b>" + charactername +"</b> has joined the channel", MessageType::Join);
 		}
 	}
 }
@@ -2285,7 +2285,7 @@ void flist_messenger::removeChannelCharacter(FSession *session, QString channeln
 	if(currentPanel->getChannelName() == channelname) {
 		refreshUserlist();
 	}
-	messageChannel(session, channelname, "<b>" + charactername +"</b> has left the channel", MESSAGE_TYPE_LEAVE);
+	messageChannel(session, channelname, "<b>" + charactername +"</b> has left the channel", MessageType::Leave);
 }
 void flist_messenger::setChannelOperator(FSession *session, QString channelname, QString charactername, bool opstatus)
 {
@@ -2333,7 +2333,7 @@ void flist_messenger::setChannelDescription(FSession *session, QString channelna
 	}
 	channelpanel->setDescription(description);
 	QString message = QString("You have joined <b>%1</b>: %2").arg(channelpanel->title()).arg(bbparser.parse(description));
-	messageChannel(session, channelname, message, MESSAGE_TYPE_CHANNEL_DESCRIPTION, true, false);
+	messageChannel(session, channelname, message, MessageType::ChannelDescription, true, false);
 }
 void flist_messenger::setChannelMode(FSession *session, QString channelname, ChannelMode mode)
 {
@@ -2379,7 +2379,7 @@ void flist_messenger::notifyCharacterOnline(FSession *session, QString character
 		//todo: Update panel with changed online/offline status.
 	}
 	if(characters.count() > 0 || channels.count() > 0 || system) {
-		messageMany(session, channels, characters, system, "<b>" + charactername +"</b> is now " + (online ? "online." : "offline."), online ? MESSAGE_TYPE_ONLINE : MESSAGE_TYPE_OFFLINE);
+		messageMany(session, channels, characters, system, "<b>" + charactername +"</b> is now " + (online ? "online." : "offline."), online ? MessageType::Online : MessageType::Offline);
 	}
 }
 void flist_messenger::notifyCharacterStatusUpdate(FSession *session, QString charactername)
@@ -2400,7 +2400,7 @@ void flist_messenger::notifyCharacterStatusUpdate(FSession *session, QString cha
 			statusmessage = QString(" (%1)").arg(statusmessage);
 		}
 		QString message = QString("<b>%1</b> is now %2%3").arg(charactername).arg(character->statusString()).arg(statusmessage);
-		messageMany(session, channels, characters, system, message, MESSAGE_TYPE_STATUS);
+		messageMany(session, channels, characters, system, message, MessageType::Status);
 	}
 	//Refresh character list if they are present in the current panel.
 	if(currentPanel->hasCharacter(session->getCharacter(charactername))) {
@@ -2448,12 +2448,12 @@ void flist_messenger::notifyCharacterProfileDataUpdated(FSession *session, QStri
 
 void flist_messenger::notifyIgnoreAdd(FSession *s, QString character)
 {
-	messageSystem(s, QString("%1 has been added to your ignore list.").arg(character), MESSAGE_TYPE_IGNORE_UPDATE);
+	messageSystem(s, QString("%1 has been added to your ignore list.").arg(character), MessageType::IgnoreUpdate);
 }
 
 void flist_messenger::notifyIgnoreRemove(FSession *s, QString character)
 {
-	messageSystem(s, QString("%1 has been removed from your ignore list.").arg(character), MESSAGE_TYPE_IGNORE_UPDATE);
+	messageSystem(s, QString("%1 has been removed from your ignore list.").arg(character), MessageType::IgnoreUpdate);
 }
 
 //todo: Making channelkey should be moved out to messageMessage().
@@ -2519,9 +2519,9 @@ void flist_messenger::messageMessage(FMessage message)
 	QString plaintext = message.getPlainTextMessage();
 	
 	switch(message.getMessageType()) {
-	case MESSAGE_TYPE_ROLL:
-	case MESSAGE_TYPE_RPAD:
-	case MESSAGE_TYPE_CHAT:
+	case MessageType::DiceRoll:
+	case MessageType::RpAd:
+	case MessageType::Chat:
 		foreach(QString keyword, keywordlist) {
 			if(plaintext.contains(keyword, Qt::CaseInsensitive)) {
 				globalkeywordmatched = true;
@@ -2575,30 +2575,30 @@ void flist_messenger::messageMessage(FMessage message)
 		}
 		//Filter based on message type.
 		switch(message.getMessageType()) {
-		case MESSAGE_TYPE_ONLINE:
-		case MESSAGE_TYPE_OFFLINE:
-		case MESSAGE_TYPE_STATUS:
+		case MessageType::Online:
+		case MessageType::Offline:
+		case MessageType::Status:
 			if(!settings->getShowOnlineOfflineMessage()) {
 				continue;
 			}
 			break;
-		case MESSAGE_TYPE_JOIN:
-		case MESSAGE_TYPE_LEAVE:
+		case MessageType::Join:
+		case MessageType::Leave:
 			if(!settings->getShowJoinLeaveMessage()) {
 				continue;
 			}
 			break;
-		case MESSAGE_TYPE_ROLL:
-		case MESSAGE_TYPE_RPAD:
-		case MESSAGE_TYPE_CHAT:
+		case MessageType::DiceRoll:
+		case MessageType::RpAd:
+		case MessageType::Chat:
 			switch(message.getMessageType()) {
-			case MESSAGE_TYPE_ROLL:
+			case MessageType::DiceRoll:
 				//todo: should rolls treated like ads or messages or as their own thing?
-			case MESSAGE_TYPE_RPAD:
+			case MessageType::RpAd:
 				message_ding |= needsAttention("message_rpad_ding", channelpanel, AttentionMode::Never);
 				message_flash |= needsAttention("message_rpad_flash", channelpanel, AttentionMode::Never);
 				break;
-			case MESSAGE_TYPE_CHAT:
+			case MessageType::Chat:
 				if(channelpanel->type() == FChannel::CHANTYPE_PM) {
 					message_ding |= needsAttention("message_character_ding", channelpanel, AttentionMode::Always);
 					message_flash |= needsAttention("message_character_flash", channelpanel, AttentionMode::Never);
@@ -2629,25 +2629,25 @@ void flist_messenger::messageMessage(FMessage message)
 			}
 			channelpanel->updateButtonColor();
 			break;
-		case MESSAGE_TYPE_REPORT:
+		case MessageType::Report:
 			soundtype = FSound::SOUND_MODALERT;
 			break;
-		case MESSAGE_TYPE_BROADCAST:
+		case MessageType::Broadcast:
 			soundtype = FSound::SOUND_ATTENTION;
 			break;
-		case MESSAGE_TYPE_LOGIN:
-		case MESSAGE_TYPE_CHANNEL_DESCRIPTION:
-		case MESSAGE_TYPE_CHANNEL_MODE:
-		case MESSAGE_TYPE_CHANNEL_INVITE:
-		case MESSAGE_TYPE_ERROR:
-		case MESSAGE_TYPE_SYSTEM:
-		case MESSAGE_TYPE_FEEDBACK:
-		case MESSAGE_TYPE_KICK:
-		case MESSAGE_TYPE_KICKBAN:
-		case MESSAGE_TYPE_IGNORE_UPDATE:
+		case MessageType::Login:
+		case MessageType::ChannelDescription:
+		case MessageType::ChannelMode:
+		case MessageType::ChannelInvite:
+		case MessageType::Error:
+		case MessageType::System:
+		case MessageType::Feedback:
+		case MessageType::Kick:
+		case MessageType::KickBan:
+		case MessageType::IgnoreUpdate:
 			break;
 		default:
-			debugMessage("Unhandled message type " + QString::number(message.getMessageType()) + " for message '" + message.getFormattedMessage() + "'.");
+			debugMessage("Unhandled message type " + enumToKey(message.getMessageType()) + " for message '" + message.getFormattedMessage() + "'.");
 		}
 		channelpanel->addLine(message.getFormattedMessage(), settings->getLogChat());
 		if(channelpanel == currentPanel) {
@@ -2685,28 +2685,28 @@ void flist_messenger::messageMany(QList<QString> &panelnames, QString message, M
 		}
 		//Filter based on message type.
 		switch(messagetype) {
-		case MESSAGE_TYPE_LOGIN:
+		case MessageType::Login:
 			break;
-		case MESSAGE_TYPE_ONLINE:
-		case MESSAGE_TYPE_OFFLINE:
-		case MESSAGE_TYPE_STATUS:
+		case MessageType::Online:
+		case MessageType::Offline:
+		case MessageType::Status:
 			if(!settings->getShowOnlineOfflineMessage()) {
 				continue;
 			}
 			break;
-		case MESSAGE_TYPE_CHANNEL_DESCRIPTION:
-		case MESSAGE_TYPE_CHANNEL_MODE:
-		case MESSAGE_TYPE_CHANNEL_INVITE:
+		case MessageType::ChannelDescription:
+		case MessageType::ChannelMode:
+		case MessageType::ChannelInvite:
 			break;
-		case MESSAGE_TYPE_JOIN:
-		case MESSAGE_TYPE_LEAVE:
+		case MessageType::Join:
+		case MessageType::Leave:
 			if(!settings->getShowJoinLeaveMessage()) {
 				continue;
 			}
 			break;
-		case MESSAGE_TYPE_ROLL:
-		case MESSAGE_TYPE_RPAD:
-		case MESSAGE_TYPE_CHAT:
+		case MessageType::DiceRoll:
+		case MessageType::RpAd:
+		case MessageType::Chat:
 			//todo: trigger sounds
 			channelpanel->setHasNewMessages(true);
 			if(panelname.startsWith("PM")) {
@@ -2714,17 +2714,17 @@ void flist_messenger::messageMany(QList<QString> &panelnames, QString message, M
 			}
 			channelpanel->updateButtonColor();
 			break;
-		case MESSAGE_TYPE_REPORT:
-		case MESSAGE_TYPE_ERROR:
-		case MESSAGE_TYPE_SYSTEM:
-		case MESSAGE_TYPE_BROADCAST:
-		case MESSAGE_TYPE_FEEDBACK:
-		case MESSAGE_TYPE_KICK:
-		case MESSAGE_TYPE_KICKBAN:
-		case MESSAGE_TYPE_IGNORE_UPDATE:
+		case MessageType::Report:
+		case MessageType::Error:
+		case MessageType::System:
+		case MessageType::Broadcast:
+		case MessageType::Feedback:
+		case MessageType::Kick:
+		case MessageType::KickBan:
+		case MessageType::IgnoreUpdate:
 			break;
 		default:
-			debugMessage("Unhandled message type " + QString::number(messagetype) + " for message '" + message + "'.");
+			debugMessage("Unhandled message type " + enumToKey(messagetype) + " for message '" + message + "'.");
 		}
 		channelpanel->addLine(messageout, true);
 		if(channelpanel == currentPanel) {
@@ -2734,44 +2734,44 @@ void flist_messenger::messageMany(QList<QString> &panelnames, QString message, M
 	//todo: Sound support is still less than what it was originally.
 	if(/*se_ping &&*/ settings->getPlaySounds()) {
 		switch(messagetype) {
-		case MESSAGE_TYPE_LOGIN:
-		case MESSAGE_TYPE_ONLINE:
-		case MESSAGE_TYPE_OFFLINE:
-		case MESSAGE_TYPE_STATUS:
-		case MESSAGE_TYPE_CHANNEL_DESCRIPTION:
-		case MESSAGE_TYPE_CHANNEL_MODE:
-		case MESSAGE_TYPE_CHANNEL_INVITE:
-		case MESSAGE_TYPE_JOIN:
-		case MESSAGE_TYPE_LEAVE:
+		case MessageType::Login:
+		case MessageType::Online:
+		case MessageType::Offline:
+		case MessageType::Status:
+		case MessageType::ChannelDescription:
+		case MessageType::ChannelMode:
+		case MessageType::ChannelInvite:
+		case MessageType::Join:
+		case MessageType::Leave:
 			break;
-		case MESSAGE_TYPE_ROLL:
-		case MESSAGE_TYPE_RPAD:
-		case MESSAGE_TYPE_CHAT:
+		case MessageType::DiceRoll:
+		case MessageType::RpAd:
+		case MessageType::Chat:
 			soundPlayer.play(FSound::SOUND_CHAT);
 			break;
-		case MESSAGE_TYPE_REPORT:
+		case MessageType::Report:
 			soundPlayer.play(FSound::SOUND_MODALERT);
 			break;
-		case MESSAGE_TYPE_ERROR:
-		case MESSAGE_TYPE_SYSTEM:
-		case MESSAGE_TYPE_BROADCAST:
+		case MessageType::Error:
+		case MessageType::System:
+		case MessageType::Broadcast:
 			soundPlayer.play(FSound::SOUND_ATTENTION);
 			break;
-		case MESSAGE_TYPE_FEEDBACK:
-		case MESSAGE_TYPE_KICK:
-		case MESSAGE_TYPE_KICKBAN:
-		case MESSAGE_TYPE_IGNORE_UPDATE:
+		case MessageType::Feedback:
+		case MessageType::Kick:
+		case MessageType::KickBan:
+		case MessageType::IgnoreUpdate:
 			break;
-		case MESSAGE_TYPE_NOTE:
+		case MessageType::Note:
 			soundPlayer.play(FSound::SOUND_NEWNOTE);
 			break;
-		case MESSAGE_TYPE_FRIEND:
+		case MessageType::Friend:
 			soundPlayer.play(FSound::SOUND_FRIENDUPDATE);
 			break;
-		case MESSAGE_TYPE_BOOKMARK:
+		case MessageType::Bookmark:
 			break;
 		default:
-			debugMessage("Unhandled sound for message type " + QString::number(messagetype) + " for message '" + message + "'.");
+			debugMessage("Unhandled sound for message type " + enumToKey(messagetype) + " for message '" + message + "'.");
 		}
 	}
 	//todo: flashing the window/panel tab
