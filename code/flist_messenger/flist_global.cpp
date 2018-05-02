@@ -53,8 +53,8 @@ void globalQuit()
 bool is_broken_escaped_apos(std::string const &data, std::string::size_type n)
 {
         return n + 2 <= data.size()
-                        and data[n] == '\\'
-                        and data[n+1] == '\'';
+                        && data[n] == '\\'
+                        && data[n+1] == '\'';
 }
 void fix_broken_escaped_apos (std::string &data)
 {
