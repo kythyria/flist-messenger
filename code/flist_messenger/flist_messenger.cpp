@@ -1635,7 +1635,7 @@ void flist_messenger::btnSendChatClicked()
 void flist_messenger::btnSendAdvClicked()
 {
 	if(settings->getPlaySounds()) {
-		soundPlayer.play ( soundPlayer.SOUND_CHAT );
+		soundPlayer.play ( SoundName::Chat );
 	}
         QPlainTextEdit *messagebox = this->findChild<QPlainTextEdit *> ( QString ( "chatinput" ) );
         QString inputText = QString ( messagebox->toPlainText() );
@@ -1664,7 +1664,7 @@ void flist_messenger::btnSendAdvClicked()
 void flist_messenger::parseInput()
 {
 	if(settings->getPlaySounds()) {
-                soundPlayer.play ( soundPlayer.SOUND_CHAT );
+                soundPlayer.play ( SoundName::Chat );
 	}
 
 	bool pm = ( bool ) ( currentPanel->type() == FChannel::CHANTYPE_PM );
@@ -2512,7 +2512,7 @@ void flist_messenger::messageMessage(FMessage message)
 	
 	bool message_ding = false;
 	bool message_flash = false;
-	FSound::soundName soundtype = FSound::SOUND_NONE;
+	SoundName soundtype = SoundName::None;
 	
 	QString panelname;
 	bool globalkeywordmatched = false;
@@ -2630,10 +2630,10 @@ void flist_messenger::messageMessage(FMessage message)
 			channelpanel->updateButtonColor();
 			break;
 		case MessageType::Report:
-			soundtype = FSound::SOUND_MODALERT;
+			soundtype = SoundName::ModAlert;
 			break;
 		case MessageType::Broadcast:
-			soundtype = FSound::SOUND_ATTENTION;
+			soundtype = SoundName::Attention;
 			break;
 		case MessageType::Login:
 		case MessageType::ChannelDescription:
@@ -2657,11 +2657,11 @@ void flist_messenger::messageMessage(FMessage message)
 
 	if(message_ding) {
 		if(session && message.getSourceCharacter() != session->character) {
-			soundtype = FSound::SOUND_ATTENTION;
+			soundtype = SoundName::Attention;
 		}
 	}
 
-	if(soundtype != FSound::SOUND_NONE && settings->getPlaySounds()) {
+	if(soundtype != SoundName::None && settings->getPlaySounds()) {
 		soundPlayer.play(soundtype);
 	}
 	if(message_flash) {
@@ -2747,15 +2747,15 @@ void flist_messenger::messageMany(QList<QString> &panelnames, QString message, M
 		case MessageType::DiceRoll:
 		case MessageType::RpAd:
 		case MessageType::Chat:
-			soundPlayer.play(FSound::SOUND_CHAT);
+			soundPlayer.play(SoundName::Chat);
 			break;
 		case MessageType::Report:
-			soundPlayer.play(FSound::SOUND_MODALERT);
+			soundPlayer.play(SoundName::ModAlert);
 			break;
 		case MessageType::Error:
 		case MessageType::System:
 		case MessageType::Broadcast:
-			soundPlayer.play(FSound::SOUND_ATTENTION);
+			soundPlayer.play(SoundName::Attention);
 			break;
 		case MessageType::Feedback:
 		case MessageType::Kick:
@@ -2763,10 +2763,10 @@ void flist_messenger::messageMany(QList<QString> &panelnames, QString message, M
 		case MessageType::IgnoreUpdate:
 			break;
 		case MessageType::Note:
-			soundPlayer.play(FSound::SOUND_NEWNOTE);
+			soundPlayer.play(SoundName::NewNote);
 			break;
 		case MessageType::Friend:
-			soundPlayer.play(FSound::SOUND_FRIENDUPDATE);
+			soundPlayer.play(SoundName::FriendUpdate);
 			break;
 		case MessageType::Bookmark:
 			break;

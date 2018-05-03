@@ -25,6 +25,8 @@
 #include <QSound>
 #include <QString>
 
+#include "flist_enums.h"
+
 // note that play() is deliberately not static, since eventually this class will be
 // used to store options for playing sounds.
 
@@ -32,23 +34,11 @@ class FSound
 {
 
 public:
-	enum soundName
-	{
-		SOUND_NONE,
-		SOUND_ATTENTION,
-		SOUND_CHAT,
-		SOUND_LOGIN,
-		SOUND_MODALERT,
-		SOUND_NEWNOTE,
-		SOUND_FRIENDUPDATE,
-		SOUND_SYSTEM,
-		SOUND_MAX
-	};
 	FSound();
-	void play ( soundName sound );
+	void play ( SoundName sound );
 
 private:
-	QString soundToString ( soundName sound );
+	QString soundToString ( SoundName sound );
 
 };
 

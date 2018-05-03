@@ -56,4 +56,15 @@ ENUMDEF_MAKE(ChannelMode)
 	X(Y,Always)       
 ENUMDEF_MAKE(AttentionMode)
 
+#define ENUMDEF_SoundName(X,Y) \
+	X(Y,None)         \
+	X(Y,Attention)    \
+	X(Y,Chat)         \
+	X(Y,Login)        \
+	X(Y,ModAlert)     \
+	X(Y,NewNote)      \
+	X(Y,FriendUpdate) \
+	X(Y,System)       
+ENUMDEF_MAKE(SoundName)
+
 #undef ENUMDEF_MAKE

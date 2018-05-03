@@ -29,9 +29,9 @@ FSound::FSound()
 {
 }
 
-void FSound::play ( soundName sound )
+void FSound::play ( SoundName sound )
 {
-	if(sound == SOUND_NONE) {
+	if(sound == SoundName::None) {
 		return;
 	}
 	QString soundFile = soundToString ( sound );
@@ -40,55 +40,13 @@ void FSound::play ( soundName sound )
 	QSound::play ( soundFile );
 }
 
-QString FSound::soundToString ( soundName sound )
+QString FSound::soundToString ( SoundName sound )
 {
-	QString soundKey, soundFile, soundPath;
+	QString soundFile, soundPath;
 
-	switch ( sound )
-	{
-
-	case SOUND_ATTENTION:
-		soundKey = "attention";
-		soundFile = "attention.wav";
-		break;
-
-	case SOUND_CHAT:
-		soundKey = "chat";
-		soundFile = "chat.wav";
-		break;
-
-	case SOUND_LOGIN:
-		soundKey = "login";
-		soundFile = "login.wav";
-		break;
-
-	case SOUND_MODALERT:
-		soundKey = "modalert";
-		soundFile = "modalert.wav";
-		break;
-
-	case SOUND_NEWNOTE:
-		soundKey = "newnote";
-		soundFile = "newnote.wav";
-		break;
-
-	case SOUND_FRIENDUPDATE:
-		soundKey = "friendupdate";
-		soundFile = "friendupdate.wav";
-		break;
-
-	case SOUND_SYSTEM:
-		soundFile = "system.wav";
-		break;
-
-	default:
-		std::cout << "Invalid sound.\n";
-		soundKey = "INVALID";
-		soundFile = "INVALID";
-		break;
-	}
-
-	soundPath = settings->getString(QString("Global/Sounds/%1").arg(soundKey));
+	soundFile = QString("%0.wav").arg(enumToKey(sound)).toLower();
+	
+	soundPath = settings->getString(QString("Global/Sounds/%1").arg(enumToKey(sound)));
 	if(soundPath.isEmpty() || !QFile::exists ( soundPath )) {
 		soundPath = "./sounds/" + soundFile;
 	}
