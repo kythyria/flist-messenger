@@ -27,13 +27,12 @@ QString htmlToPlainText(QString input);
 void centerOnScreen(QWidget *widge);
 
 #define FLIST_NAME "F-List Messenger [Beta]"
-#define FLIST_VERSIONNUM "0.9.1." GIT_HASH
-#define FLIST_PRETTYVERSION "0.9.1." GIT_REV " (commit " GIT_HASH ")"
-#define FLIST_SHORTVERSION "0.9.1." GIT_REV
+#define FLIST_VERSIONNUM "0.10.0." GIT_HASH
+#define FLIST_PRETTYVERSION "0.10.0." GIT_REV " (commit " GIT_HASH ")"
+#define FLIST_SHORTVERSION "0.10.0." GIT_REV
 #define FLIST_VERSION FLIST_NAME " " FLIST_SHORTVERSION
 #define FLIST_CLIENTID "F-List Desktop Client"
 
-#define FLIST_CHAT_SERVER_HOST "chat.f-list.net"
 #define FLIST_CHAT_SERVER "wss://chat.f-list.net:9799/"
 
 #endif // FLIST_GLOBAL_H

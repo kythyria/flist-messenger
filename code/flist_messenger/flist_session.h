@@ -4,8 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
-#include <QTcpSocket>
-#include <QSslError>
+#include <QtWebSockets/QWebSocket>
 #include <QQueue>
 
 #include "flist_channelsummary.h"
@@ -16,8 +15,6 @@ class FAccount;
 class FChannel;
 class FCharacter;
 class JSONNode;
-class QSslSocket;
-class QWebSocket;
 
 class FSession : public QObject
 {
@@ -114,7 +111,6 @@ public:
 	QString sessionid;
 	QString character;
 
-	QSslSocket *tcpsocket;
 	QWebSocket *socket;
 
 private:
@@ -135,8 +131,6 @@ public:
 	QList<FChannelSummary> knownopenroomlist; //<List of known open rooms, as reported by the server.
 
 private:
-	std::string socketreadbuffer;
-
 	void processJoinQueue();
 
 #define COMMAND(name) void cmd##name(std::string &rawpacket, JSONNode &nodes)

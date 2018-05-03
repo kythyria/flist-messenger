@@ -1,6 +1,5 @@
 
 #include <QTime>
-#include <QSslSocket>
 #include <QtWebSockets/QWebSocket>
 
 #include "flist_session.h"
@@ -21,7 +20,6 @@ FSession::FSession(FAccount *account, QString &character, QObject *parent) :
 	account(account),
 	sessionid(character),
 	character(character),
-	tcpsocket(0),
     socket(nullptr),
 	characterlist(),
 	friendslist(),
@@ -33,16 +31,15 @@ FSession::FSession(FAccount *account, QString &character, QObject *parent) :
 	autojoinchannels(),
 	servervariables(),
 	knownchannellist(),
-	knownopenroomlist(),
-	socketreadbuffer()
+	knownopenroomlist()
 {
 }
 
 FSession::~FSession()
 {
-	if(tcpsocket != 0) {
-		delete tcpsocket;
-		tcpsocket = 0;
+	if(socket) {
+		socket->abort();
+		socket->deleteLater();
 	}
 }
 

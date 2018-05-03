@@ -23,7 +23,6 @@ public slots:
 
 public:
 	QString chatserver_url;
-
 	
 	QList<FAccount *> accounts; //< User accounts that are logged on. (Should only be one.)
 	//QHash<QString, FCharacterProfile *> charactercache; //< List of all known characters on the server.
