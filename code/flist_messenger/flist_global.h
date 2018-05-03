@@ -33,10 +33,7 @@ void centerOnScreen(QWidget *widge);
 #define FLIST_VERSION FLIST_NAME " " FLIST_SHORTVERSION
 #define FLIST_CLIENTID "F-List Desktop Client"
 
-
-#define FLIST_CHAT_SERVER "chat.f-list.net"
-//#define FLIST_CHAT_SERVER_PORT 8722 //Test server
-//#define FLIST_CHAT_SERVER_PORT 9722 //Real server (plain text)
-#define FLIST_CHAT_SERVER_PORT 9799 //Real server (encrypted)
+#define FLIST_CHAT_SERVER_HOST "chat.f-list.net"
+#define FLIST_CHAT_SERVER "wss://chat.f-list.net:9799/"
 
 #endif // FLIST_GLOBAL_H

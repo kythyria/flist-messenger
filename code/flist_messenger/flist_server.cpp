@@ -6,8 +6,7 @@
 
 FServer::FServer(QObject *parent) :
 	QObject(parent),
-	chatserver_host(FLIST_CHAT_SERVER),
-	chatserver_port(FLIST_CHAT_SERVER_PORT),
+    chatserver_url(FLIST_CHAT_SERVER),
 	accounts()
 {
 }

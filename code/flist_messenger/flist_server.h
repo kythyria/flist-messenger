@@ -22,8 +22,7 @@ signals:
 public slots:
 
 public:
-	QString chatserver_host;
-	int chatserver_port;
+	QString chatserver_url;
 
 	
 	QList<FAccount *> accounts; //< User accounts that are logged on. (Should only be one.)

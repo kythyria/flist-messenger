@@ -17,6 +17,7 @@ class FChannel;
 class FCharacter;
 class JSONNode;
 class QSslSocket;
+class QWebSocket;
 
 class FSession : public QObject
 {
@@ -106,16 +107,15 @@ public slots:
 	void socketConnected();
 	void socketError(QAbstractSocket::SocketError);
 	void socketSslError(QList<QSslError> sslerrors);
-	void socketReadReady();
+	void socketReceivedTextMessage(const QString &message);
 
 public:
-	bool connected;
 	FAccount *account;
 	QString sessionid;
 	QString character;
 
-	//QTcpSocket *tcpsocket;
 	QSslSocket *tcpsocket;
+	QWebSocket *socket;
 
 private:
 	QHash<QString, FCharacter *> characterlist; //< List of all known characters on the server/session.
@@ -135,7 +135,6 @@ public:
 	QList<FChannelSummary> knownopenroomlist; //<List of known open rooms, as reported by the server.
 
 private:
-	bool wsready;
 	std::string socketreadbuffer;
 
 	void processJoinQueue();
