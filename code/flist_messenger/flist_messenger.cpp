@@ -1247,21 +1247,19 @@ void flist_messenger::quitApp()
 
 void flist_messenger::socketError ( QAbstractSocket::SocketError socketError )
 {
-        (void) socketError;
-        FSession *session = account->getSession(charName); //todo: fix this
-				QString sockErrorStr = session->tcpsocket->errorString();
-        if ( currentPanel )
-        {
-                QString errorstring = "<b>Socket Error: </b>" + sockErrorStr;
+	(void) socketError;
+	FSession *session = account->getSession(charName); //todo: fix this
+	QString sockErrorStr = session->socket->errorString();
+	if ( currentPanel )
+	{
+		QString errorstring = "<b>Socket Error: </b>" + sockErrorStr;
 		messageSystem(0, errorstring, MessageType::Error);
-        }
-        else
-                QMessageBox::critical ( this, "Socket Error!", "Socket Error: " + sockErrorStr );
+	}
+	else {
+		QMessageBox::critical ( this, "Socket Error!", "Socket Error: " + sockErrorStr );
+	}
 
-        disconnected = true;
-        //session->tcpsocket->abort();
-        //session->tcpsocket->deleteLater();
-        //session->tcpsocket = 0;
+	disconnected = true;
 }
 void flist_messenger::socketSslError (QList<QSslError> sslerrors ) {
         QMessageBox msgbox;
