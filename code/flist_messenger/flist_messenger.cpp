@@ -22,16 +22,56 @@
 #include "flist_messenger.h"
 #include "flist_global.h"
 
+#include <iostream>
 #include <QString>
 #include <QSplitter>
 #include <QClipboard>
+#include <QTimer>
+#include <QDesktopServices>
+#include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
+#include <QAction>
+#include <QMessageBox>
+#include <QComboBox>
+#include <QPushButton>
+#include <QGroupBox>
+#include <QButtonGroup>
+#include <QHBoxLayout>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QListWidget>
+#include <QScrollArea>
+#include <QStatusBar>
+#include <QPlainTextEdit>
+#include <QTextEdit>
+#include <QTextBrowser>
+#include <QLineEdit>
+#include <QScrollBar>
+#include <QSpacerItem>
+#include <QVBoxLayout>
+#include <QCheckBox>
+#include <QIcon>
+#include <QSettings>
 
+#include "flist_character.h"
 #include "flist_account.h"
 #include "flist_server.h"
 #include "flist_session.h"
 #include "flist_message.h"
 #include "flist_settings.h"
 #include "flist_attentionsettingswidget.h"
+#include "flist_channelpanel.h"
+#include "flist_channeltab.h"
+#include "flist_logtextbrowser.h"
+
+#include "ui/characterinfodialog.h"
+#include "ui/channellistdialog.h"
+#include "ui/helpdialog.h"
+#include "ui/aboutdialog.h"
+#include "ui/makeroomdialog.h"
+#include "ui/statusdialog.h"
+#include "ui/friendsdialog.h"
 
 // Bool to string macro
 #define BOOLSTR(b) ( (b) ? "true" : "false" )
@@ -55,7 +95,6 @@ flist_messenger::flist_messenger(bool d)
 	notificationsAreaMessageShown = false;
 	console = 0;
 	chatview = 0;
-	//tcpSock = 0;
 	debugging = d;
 	disconnected = true;
 	friendsDialog = 0;

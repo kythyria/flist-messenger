@@ -26,38 +26,11 @@
 #include <QList>
 #include <QVector>
 #include <QVectorIterator>
-#include "flist_messenger.h"
 #include "flist_character.h"
 #include "flist_parser.h"
 #include "../libjson/libJSON.h"
 #include "../libjson/Source/NumberToString.h"
 #include "flist_enums.h"
-
-#include <iostream>
-#include <QDesktopWidget>
-#include <QApplication>
-#include <QLabel>
-#include <QMenu>
-#include <QMenuBar>
-#include <QAction>
-#include <QMessageBox>
-#include <QComboBox>
-#include <QPushButton>
-#include <QGroupBox>
-#include <QButtonGroup>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QHeaderView>
-#include <QListWidget>
-#include <QScrollArea>
-#include <QStatusBar>
-#include <QTextEdit>
-#include <QLineEdit>
-#include <QScrollBar>
-#include <QVBoxLayout>
-#include <QPlainTextEdit>
-#include <QTextBrowser>
-#include <QStringList>
 
 #include <time.h>
 
@@ -65,6 +38,8 @@
 
 class iUserInterface;
 class QStringList;
+class QPushButton;
+class QTextBrowser;
 
 class FChannelPanel
 {

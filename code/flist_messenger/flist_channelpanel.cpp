@@ -26,6 +26,11 @@
 #include <QStringList>
 #include <QSettings>
 #include <QDateTime>
+#include <QApplication>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QScrollBar>
+#include <QTextBrowser>
 
 #include "flist_global.h"
 #include "flist_session.h"

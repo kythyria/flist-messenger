@@ -24,74 +24,55 @@
 
 #include <QMainWindow>
 #include <QNetworkAccessManager>
-#include <QUrlQuery>
-#include <QUrl>
 #include <QString>
-#include <QSignalMapper>
-#include <QDesktopServices>
-#include <QtNetwork>
-
-#include <iostream>
-#include <QDesktopWidget>
-#include <QApplication>
-#include <QLabel>
-#include <QMenu>
-#include <QMenuBar>
-#include <QAction>
-#include <QMessageBox>
-#include <QComboBox>
-#include <QPushButton>
-#include <QGroupBox>
-#include <QButtonGroup>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QHeaderView>
-#include <QListWidget>
-#include <QScrollArea>
-#include <QStatusBar>
-#include <QTextEdit>
-#include <QTextBrowser>
-#include <QLineEdit>
-#include <QScrollBar>
-#include <QSpacerItem>
-#include <QVBoxLayout>
-#include <QPlainTextEdit>
-#include <QListWidgetItem>
-#include <QDialog>
-#include <QTabWidget>
-#include <QCheckBox>
-#include <QIcon>
 #include <QSystemTrayIcon>
-#include <QTextBrowser>
-#include <QSettings>
 
 #include "../libjson/libJSON.h"
 #include "../libjson/Source/NumberToString.h"
 
-#include "flist_character.h"
-#include "flist_channelpanel.h"
 #include "flist_sound.h"
 #include "flist_avatar.h"
 #include "flist_parser.h"
-#include "flist_channeltab.h"
 #include "flist_iuserinterface.h"
-#include "flist_logtextbrowser.h"
 #include "flist_loginwindow.h"
 #include "flist_logincontroller.h"
 #include "usereturn.h"
-#include "ui/characterinfodialog.h"
-#include "ui/channellistdialog.h"
-#include "ui/helpdialog.h"
-#include "ui/aboutdialog.h"
-#include "ui/makeroomdialog.h"
-#include "ui/statusdialog.h"
-#include "ui/friendsdialog.h"
 
 class QSplitter;
+class QLabel;
+class QMenu;
+class QMenuBar;
+class QAction;
+class QComboBox;
+class QPushButton;
+class QGroupBox;
+class QScrollArea;
+class QPlainTextEdit;
+class QCheckBox;
+class QHBoxLayout;
+class QVBoxLayout;
+class QSpacerItem;
+class QGridLayout;
+class QLineEdit;
+class QListWidget;
+class QTextEdit;
+class QTextBrowser;
 
 class FAccount;
 class FServer;
+class FCharacter;
 class FAttentionSettingsWidget;
+class FChannelTab;
+class FLogTextBrowser;
+
+class FCharacterInfoDialog;
+class FChannelListDialog;
+class FChannelListModel;
+class FHelpDialog;
+class FAboutDialog;
+class FMakeRoomDialog;
+class StatusDialog;
+class FriendsDialog;
 
 // This is a complete mess, login should be pulled out into another class somehow, and decoupled from the UI.
 
@@ -106,7 +87,7 @@ public:
 	static const QString getSettingsPath() { return settingsPath; }
 	flist_messenger(bool d);
 	~flist_messenger();
-public:
+
 	virtual FSession *getSession(QString sessionid);
 
 	virtual void setChatOperator(FSession *session, QString characteroperator, bool opstatus);
@@ -152,7 +133,6 @@ private:
 	bool getChannelBool(QString key, FChannelPanel *channelpanel, bool dflt);
 	bool needsAttention(QString key, FChannelPanel *channelpanel, AttentionMode dflt);
 
-public:
 	QPushButton* pushButton;
 	FChannelTab* channelTab;
 	QLabel* label;
