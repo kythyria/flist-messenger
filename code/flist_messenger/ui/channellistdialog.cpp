@@ -161,11 +161,7 @@ void FChannelListDialog::setModel(FChannelListModel *m)
 	data = m;
 	datasort->setSourceModel(data);
 	chTable->resizeColumnsToContents();
-#if QT_VERSION >= 0x050000
 	chTable->horizontalHeader()->setSectionResizeMode(FChannelListModel::colType,	QHeaderView::ResizeToContents);
-#else
-	chTable->horizontalHeader()->setResizeMode(FChannelListModel::colType,	QHeaderView::ResizeToContents);
-#endif
 }
 
 void FChannelListDialog::on_buttonBox_accepted()

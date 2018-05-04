@@ -1,15 +1,12 @@
 #ifndef FLIST_ACCOUNT_H
 #define FLIST_ACCOUNT_H
 
-#include "flist_common.h"
 #include <QObject>
 #include <QString>
 #include <QList>
 #include <QSslError>
 #include <QUrl>
-#if QT_VERSION >= 0x050000
 #include <QUrlQuery>
-#endif
 #include <QNetworkReply>
 #include "flist_api.h"
 

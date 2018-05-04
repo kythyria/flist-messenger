@@ -22,19 +22,14 @@
 #ifndef flist_messenger_H
 #define flist_messenger_H
 
-#include "flist_common.h"
-
 #include <QMainWindow>
 #include <QNetworkAccessManager>
-#include <QTcpSocket>
-#include <QSslSocket>
-#if QT_VERSION >= 0x050000
 #include <QUrlQuery>
-#endif
 #include <QUrl>
 #include <QString>
 #include <QSignalMapper>
 #include <QDesktopServices>
+#include <QtNetwork>
 
 #include <iostream>
 #include <QDesktopWidget>
@@ -69,10 +64,6 @@
 #include <QSystemTrayIcon>
 #include <QTextBrowser>
 #include <QSettings>
-
-#include <QUrl>
-#include <QtNetwork>
-#include <QTcpSocket>
 
 #include "../libjson/libJSON.h"
 #include "../libjson/Source/NumberToString.h"

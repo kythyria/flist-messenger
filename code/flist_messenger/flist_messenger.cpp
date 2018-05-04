@@ -499,11 +499,7 @@ void flist_messenger::reportTicketFinished()
     fix_broken_escaped_apos(toWrite);
     lparam = QUrlQuery();
     lparam.addQueryItem("log", toWrite.c_str());
-#if QT_VERSION >= 0x050000
     postData = lparam.query(QUrl::FullyEncoded).toUtf8();
-#else
-    postData = lparam.encodedQuery();
-#endif
     lreply = qnam.post ( request, postData );
     //todo: fix this!
     lreply->ignoreSslErrors();

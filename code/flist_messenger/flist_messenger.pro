@@ -33,7 +33,6 @@ HEADERS += \
            flist_avatar.h \
            flist_channeltab.h \
            flist_character.h \
-           flist_common.h \
            flist_global.h \
            flist_messenger.h \
            flist_parser.h \
