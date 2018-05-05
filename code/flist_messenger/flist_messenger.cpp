@@ -449,10 +449,9 @@ void flist_messenger::submitReport()
 
 void flist_messenger::handleReportFinished()
 {
-    if ( lreply->error() != QNetworkReply::NoError ){
-        QString message = "Response error during sending of report ";
-        message.append ( "of type " );
-        message.append ( NumberToString::_uitoa<unsigned int> ( ( unsigned int ) lreply->error() ).c_str() );
+	if ( lreply->error() != QNetworkReply::NoError ) {
+		auto message = QStringLiteral("Response error during sending of report of type %0")
+		        .arg(lreply->error());
         QMessageBox::critical ( this, "FATAL ERROR DURING TICKET RETRIEVAL!", message );
         return;
     } else {
@@ -461,8 +460,7 @@ void flist_messenger::handleReportFinished()
         std::string response ( respbytes.begin(), respbytes.end() );
         JSONNode respnode = libJSON::parse ( response );
         JSONNode childnode = respnode.at ( "error" );
-        if ( childnode.as_string() != "" )
-				{
+        if ( childnode.as_string() != "" ) {
             std::string message = "Error from server: " + childnode.as_string();
             QMessageBox::critical ( this, "Error", message.c_str() );
             return;
@@ -476,18 +474,8 @@ void flist_messenger::handleReportFinished()
             QString who = re_leWho->text().replace ( '&', amp ).replace ( '<', lt ).replace ( '>', gt );
             if (who.trimmed() == "") who = "None";
             QString report = "Current Tab/Channel: " + currentPanel->title() + " | Reporting User: " + who + " | " + problem;
-            JSONNode node;
-            JSONNode actionnode("action", "report");
-            std::cout << logid << std::endl;
-            JSONNode logidnode("logid", logid);
-            JSONNode charnode("character", charName.toStdString());
-            JSONNode reportnode("report", report.toStdString());
-            node.push_back(actionnode);
-            node.push_back(charnode);
-            node.push_back(reportnode);
-            node.push_back(logidnode);
-            std::string output = "SFC " + node.write();
-            sendWS(output);
+			FSession *session = account->getSession(charName);
+			session->sendSubmitStaffReport(charName, logid, report);
             reportDialog->hide();
             re_leWho->clear();
             re_teProblem->clear();
@@ -500,14 +488,12 @@ void flist_messenger::handleReportFinished()
 
 void flist_messenger::reportTicketFinished()
 {
-    if ( lreply->error() != QNetworkReply::NoError )
-        {
-								QString message = "Response error during fetching of ticket ";
-                message.append ( " of type " );
-                message.append ( NumberToString::_uitoa<unsigned int> ( ( unsigned int ) lreply->error() ).c_str() );
-                QMessageBox::critical ( this, "FATAL ERROR DURING TICKET RETRIEVAL!", message );
-                return;
-        }
+	if ( lreply->error() != QNetworkReply::NoError ) {
+		auto message = QStringLiteral("Response error during fetching of ticket of type %0")
+		        .arg(lreply->error());
+		QMessageBox::critical( this, "FATAL ERROR DURING TICKET RETRIEVAL!", message );
+		return;
+	}
         QByteArray respbytes = lreply->readAll();
         lreply->deleteLater();
         std::string response ( respbytes.begin(), respbytes.end() );
@@ -1307,13 +1293,6 @@ void flist_messenger::socketSslError (QList<QSslError> sslerrors ) {
         }
         msgbox.critical ( this, "SSL ERROR DURING LOGIN!", errorstring );
 	messageSystem(0, errorstring, MessageType::Error);
-}
-
-//todo: Calls to sendWS() are to be replaced with appropriate calls to FSession methods.
-void flist_messenger::sendWS ( std::string& input )
-{
-	FSession *session = account->getSession(charName);
-	session->wsSend(input);
 }
 
 void flist_messenger::changeStatus (QString status, QString statusmsg )

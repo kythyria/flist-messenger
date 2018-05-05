@@ -280,7 +280,6 @@ private:
 	void printDebugInfo(std::string s);
 	void createTrayIcon();
 	void setupConsole();								// Makes the console channel.
-	void sendWS ( std::string& input );					// Sends messages to the server
 	FChannelTab* addToActivePanels ( QString& channel, QString &channelname, QString& tooltip );	// Adds the newly joined channel to the displayed list of channels
 	void refreshUserlist();								// Refreshes the GUI's userlist, based on what the current panel is
 	void refreshChatLines();							// Refreshes the GUI's chat lines, based on what the current panel is

@@ -57,6 +57,7 @@ public:
 	void sendCharacterMessage(QString charactername, QString message);
 	void sendChannelLeave(QString channelname);
 	void sendConfirmStaffReport(QString callid);
+	void sendSubmitStaffReport(QString character, std::string logId, QString report);
 	void sendIgnoreAdd(QString character);
 	void sendIgnoreDelete(QString character);
 	void sendStatus(QString status, QString statusmsg);

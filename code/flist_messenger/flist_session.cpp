@@ -1422,6 +1422,19 @@ void FSession::sendConfirmStaffReport(QString callid)
 	wsSend("SFC", nodes);
 }
 
+void FSession::sendSubmitStaffReport(QString character, std::string logId, QString report) {
+	JSONNode node;
+	JSONNode actionnode("action", "report");
+	JSONNode logidnode("logid", logId);
+	JSONNode charnode("character", character.toStdString());
+	JSONNode reportnode("report", report.toStdString());
+	node.push_back(actionnode);
+	node.push_back(charnode);
+	node.push_back(reportnode);
+	node.push_back(logidnode);
+	wsSend("SFC", node);
+}
+
 void FSession::sendIgnoreAdd(QString character)
 {
 	character = character.toLower();
