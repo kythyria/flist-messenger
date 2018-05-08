@@ -1,6 +1,7 @@
 #include "flist_loginwindow.h"
 #include "ui_flist_loginwindow.h"
 #include "usereturn.h"
+#include "flist_global.h"
 
 #include <QMessageBox>
 
@@ -13,21 +14,21 @@ FLoginWindow::FLoginWindow(QWidget *parent) :
 	//Set the proper labels and icons
 	QPushButton *csok, *cscancel;
 	csok = ui->charSelectButtons->button(QDialogButtonBox::Ok);
-	csok->setIcon(QIcon(":/images/plug-connect.png"));
-	csok->setText(QString("Connect"));
+	csok->setIcon(QIcon(QSL(":/images/plug-connect.png")));
+	csok->setText(QSL("Connect"));
 	cscancel = ui->charSelectButtons->button(QDialogButtonBox::Cancel);
-	cscancel->setIcon(QIcon(":/images/cross.png"));
-	cscancel->setText("Cancel");
+	cscancel->setIcon(QIcon(QSL(":/images/cross.png")));
+	cscancel->setText(QSL("Cancel"));
 
-	connect(ui->loginButton, SIGNAL(clicked()), this, SLOT(loginClicked()));
-	connect(csok, SIGNAL(clicked()), this, SLOT(connectClicked()));
-	connect(cscancel, SIGNAL(clicked()), this, SLOT(showLoginPage()));
-	connect(ui->dismissMessage, SIGNAL(clicked()), this, SLOT(dismissMessage()));
+	connect(ui->loginButton, &QPushButton::clicked, this, &FLoginWindow::loginClicked);
+	connect(csok, &QPushButton::clicked, this, &FLoginWindow::connectClicked);
+	connect(cscancel, &QPushButton::clicked, this, &FLoginWindow::showLoginPage);
+	connect(ui->dismissMessage, &QPushButton::clicked, this, &FLoginWindow::dismissMessage);
 
 	ReturnFilter *rf = new ReturnFilter(this);
 	this->installEventFilter(rf);
 
-	connect(rf, SIGNAL(plainEnter()), this, SLOT(enterPressed()));
+	connect(rf, &ReturnFilter::plainEnter, this, &FLoginWindow::enterPressed);
 }
 
 FLoginWindow::~FLoginWindow()
@@ -96,7 +97,7 @@ void FLoginWindow::loginClicked()
 
 	if(un.isEmpty() || pass.isEmpty())
 	{
-		showError("Please enter both username and password");
+		showError(QSL("Please enter both username and password"));
 	}
 	else
 	{
@@ -126,6 +127,6 @@ void FLoginWindow::enterPressed()
 	}
 	else
 	{
-		QMessageBox::critical(this, "This shouldn't happen", "You somehow managed to press enter while a nonexistent page was selected. Please file a bug report explaining what you just did.");
+		QMessageBox::critical(this, QSL("This shouldn't happen"), QSL("You somehow managed to press enter while a nonexistent page was selected. Please file a bug report explaining what you just did."));
 	}
 }

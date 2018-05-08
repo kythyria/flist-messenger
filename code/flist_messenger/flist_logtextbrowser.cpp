@@ -27,37 +27,37 @@ void FLogTextBrowser::contextMenuEvent(QContextMenuEvent *event)
 	QAction *action;
 	if(flist_copylink.isEmpty()) {
 		//Plain text selected
-	} else if(flist_copylink.startsWith("https://www.f-list.net/c/")) {
-		flist_copyname = flist_copylink.mid(QString("https://www.f-list.net/c/").length());
-		if(flist_copyname.endsWith("/")) {
+	} else if(flist_copylink.startsWith(QSL("https://www.f-list.net/c/"))) {
+		flist_copyname = flist_copylink.mid(QSL("https://www.f-list.net/c/").length());
+		if(flist_copyname.endsWith(QChar('/'))) {
 			flist_copyname = flist_copyname.left(flist_copyname.length() - 1);
 		}
-		menu->addAction(QString("Open Profile"), this, SLOT(openProfile()));
+		menu->addAction(QSL("Open Profile"), this, &FLogTextBrowser::openProfile);
 		//todo: Get the list of available sessions. Create a submenu with all available characters if there is more than one (or this session isn't vlaid).
-		menu->addAction(QString("Open PM"), this, SLOT(openPrivateMessage()));
-		menu->addAction(QString("Copy Profile Link"), this, SLOT(copyLink()));
-		menu->addAction(QString("Copy Name"), this, SLOT(copyName()));
+		menu->addAction(QSL("Open PM"), this, &FLogTextBrowser::openPrivateMessage);
+		menu->addAction(QSL("Copy Profile Link"), this, &FLogTextBrowser::copyLink);
+		menu->addAction(QSL("Copy Name"), this, &FLogTextBrowser::copyName);
 		menu->addSeparator();
-	} else if(flist_copylink.startsWith("#AHI-")) {
+	} else if(flist_copylink.startsWith(QSL("#AHI-"))) {
 		flist_copyname = flist_copylink.mid(5);
 		//todo: Get the list of available sessions. Create a submenu with all available characters if there is more than one (or this session isn't vlaid).
-		menu->addAction(QString("Join Channel"), this, SLOT(joinChannel()));
+		menu->addAction(QSL("Join Channel"), this, &FLogTextBrowser::joinChannel);
 		//todo: Maybe get the name the plain text of the link and make that available for copying?
-		menu->addAction(QString("Copy Channel ID"), this, SLOT(copyName()));
+		menu->addAction(QSL("Copy Channel ID"), this, &FLogTextBrowser::copyName);
 		menu->addSeparator();
-	} else if(flist_copylink.startsWith("#CSA-")) {
+	} else if(flist_copylink.startsWith(QSL("#CSA-"))) {
 		flist_copyname = flist_copylink.mid(5);
 		//todo: If possible, get which session this actually came from and use that.
-		menu->addAction(QString("Confirm Staff Report"), this, SLOT(confirmReport()));
-		menu->addAction(QString("Copy Call ID"), this, SLOT(copyName()));
+		menu->addAction(QSL("Confirm Staff Report"), this, &FLogTextBrowser::confirmReport);
+		menu->addAction(QSL("Copy Call ID"), this, &FLogTextBrowser::copyName);
 		menu->addSeparator();
 	} else {
-		menu->addAction(QString("Copy Link"), this, SLOT(copyLink()));
+		menu->addAction(QSL("Copy Link"), this, &FLogTextBrowser::copyLink);
 		menu->addSeparator();
 	}
-	action = menu->addAction(QString("Copy Selection"), this, SLOT(copy()));
+	action = menu->addAction(QSL("Copy Selection"), this, &FLogTextBrowser::copy);
 	action->setEnabled(cursor.hasSelection());
-	menu->addAction(QString("Select All"), this, SLOT(selectAll()));
+	menu->addAction(QSL("Select All"), this, &FLogTextBrowser::selectAll);
 
 	menu->exec(event->globalPos());
 	delete menu;

@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QTabWidget>
+#include "flist_global.h"
 
 namespace Ui
 {
@@ -40,22 +41,22 @@ namespace Ui
 			profileTabs = new QTabWidget(dialog);
 			profileTab = new QTextEdit();
 			profileTab->setReadOnly(true);
-			profileTabs->addTab(profileTab, QString("Profile"));
+			profileTabs->addTab(profileTab, QSL("Profile"));
 			kinkTab = new QTextEdit();
 			kinkTab->setReadOnly(true);
-			profileTabs->addTab(kinkTab, QString("Kinks"));
+			profileTabs->addTab(kinkTab, QSL("Kinks"));
 			profileTabs->setCurrentIndex(0);
 			vbl->addWidget(profileTabs);
 
 			buttons = new QDialogButtonBox(Qt::Horizontal, dialog);
-			closeButton = new QPushButton(QIcon(":/images/cross.png"), QString("Close"));
+			closeButton = new QPushButton(QIcon(QSL(":/images/cross.png")), QSL("Close"));
 			buttons->addButton(closeButton, QDialogButtonBox::RejectRole);
 			vbl->addWidget(buttons);
 
 			dialog->setLayout(vbl);
-			dialog->setWindowTitle(QString("Character Info"));
+			dialog->setWindowTitle(QSL("Character Info"));
 
-			QObject::connect(buttons, SIGNAL(rejected()), dialog, SLOT(reject()));
+			QObject::connect(buttons,&QDialogButtonBox::rejected, dialog, &FCharacterInfoDialog::reject);
 			QMetaObject::connectSlotsByName(dialog);
 		}
 	};
@@ -75,7 +76,7 @@ FCharacterInfoDialog::~FCharacterInfoDialog()
 
 void FCharacterInfoDialog::setDisplayedCharacter(FCharacter *c)
 {
-	QString name = QString("<b>%1</b> (%2)").arg(c->name()).arg(c->statusString());
+	QString name = QSL("<b>%1</b> (%2)").arg(c->name(),c->statusString());
 	ui->name->setText(name);
 
 	ui->status->setText(c->statusMsg());
@@ -98,6 +99,6 @@ void FCharacterInfoDialog::updateKeyValues(QStringList &k, QHash<QString,QString
 	te->clear();
 	foreach(QString key, k)
 	{
-		te->append(QString("<b>%1:</b> %2").arg(key).arg(kv[key]));
+		te->append(QSL("<b>%1:</b> %2").arg(key,kv[key]));
 	}
 }

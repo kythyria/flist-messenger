@@ -90,6 +90,7 @@ public:
 	void setAlwaysPing ( bool b ) {alwaysPing = b;}
 	bool getAlwaysPing(){return alwaysPing;}
 	JSONNode* toJSON();
+	// TODO: Why is this a pointer? QString is implicitly shared.
 	QString* toString();
 	QStringList &getKeywordList() {return keywordlist;}
 	void loadSettings();

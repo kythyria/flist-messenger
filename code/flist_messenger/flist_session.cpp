@@ -1344,10 +1344,8 @@ void FSession::sendChannelMessage(QString channelname, QString message)
 	nodes.push_back(JSONNode("channel", channelname.toStdString()));
 	nodes.push_back(JSONNode("message", message.toStdString()));
 	wsSend("MSG", nodes);
-	//Escape HTML characters.
-        message.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;");
 	//Send the message to the UI now.
-	QString messagefinal = makeMessage(message, character, getCharacter(character), channel);
+	QString messagefinal = makeMessage(message.toHtmlEscaped(), character, getCharacter(character), channel);
 	FMessage fmessage(messagefinal, MessageType::Chat);
 	fmessage.toChannel(channelname).fromChannel(channelname).fromCharacter(this->character).fromSession(sessionid);
 	account->ui->messageMessage(fmessage);
@@ -1372,10 +1370,8 @@ void FSession::sendChannelAdvertisement(QString channelname, QString message)
 	nodes.push_back(JSONNode("channel", channelname.toStdString()));
 	nodes.push_back(JSONNode("message", message.toStdString()));
 	wsSend("LRP", nodes);
-	//Escape HTML characters.
-        message.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;");
 	//Send the message to the UI now.
-	QString messagefinal = makeMessage(message, character, getCharacter(character), channel, "<font color=\"green\"><b>Roleplay ad by</font> ", "");
+	QString messagefinal = makeMessage(message.toHtmlEscaped(), character, getCharacter(character), channel, "<font color=\"green\"><b>Roleplay ad by</font> ", "");
 	FMessage fmessage(messagefinal, MessageType::RpAd);
 	fmessage.toChannel(channelname).fromChannel(channelname).fromCharacter(this->character).fromSession(sessionid);
 	account->ui->messageMessage(fmessage);
@@ -1396,11 +1392,8 @@ void FSession::sendCharacterMessage(QString charactername, QString message)
 	nodes.push_back(JSONNode("recipient", charactername.toStdString()));
 	nodes.push_back(JSONNode("message", message.toStdString()));
 	wsSend("PRI", nodes);
-	//Escape HTML characters.
-	//todo: use a proper function
-        message.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;");
 	//Send the message to the UI now.
-	QString messagefinal = makeMessage(message, this->character, getCharacter(this->character));
+	QString messagefinal = makeMessage(message.toHtmlEscaped(), this->character, getCharacter(this->character));
 	FMessage fmessage(messagefinal, MessageType::Chat);
 	fmessage.toCharacter(charactername).fromCharacter(this->character).fromSession(sessionid);
 	account->ui->messageMessage(fmessage);

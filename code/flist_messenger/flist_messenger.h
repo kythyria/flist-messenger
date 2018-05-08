@@ -209,7 +209,6 @@ private slots:
 	void destroyMenu();
 	void destroyChanMenu();
 	void socketError ( QAbstractSocket::SocketError socketError );
-	void socketSslError ( QList<QSslError> sslerrors );
 	void quitApp();
 	void aboutApp();
 	void channelButtonMenuRequested();
@@ -223,7 +222,6 @@ private slots:
 	void handleReportFinished();
 	void reportTicketFinished();
 	void btnSendAdvClicked();
-	void btnSendChatClicked();
 	void createPublicChannel(QString name);
 	void createPrivateChannel(QString name);
 	void ul_pmRequested();
@@ -254,19 +252,17 @@ private slots:
 	void cs_btnCancelClicked();
 	void cs_btnSaveClicked();
 	void scrollChatViewEnd();
-	void openPMTab();
 	void openPMTab ( QString character );
 	void displayCharacterContextMenu ( FCharacter* ch );
 	void displayChannelContextMenu ( FChannelPanel* ch );
-
 	void cl_joinRequested(QStringList channels);
 	void changeStatus (QString status, QString statusmsg );
+	void parseInput();
 
 
 public:
 	void leaveChannelPanel(QString panelname);
 	void closeChannelPanel(QString panelname);
-	void parseInput();
 	void flashApp(QString& reason);
 	static const int BUFFERPUB  = 4096; // Buffer limit in public
 	static const int BUFFERPRIV = 50000; // Buffer limit in private
@@ -293,7 +289,6 @@ private:
 	void parseSettingsLine(QString line);
 	QNetworkAccessManager qnam;
 	QNetworkReply* lreply;
-	QUrl lurl;
 	QUrlQuery lparam;
 
 	FLoginWindow *loginWidget;

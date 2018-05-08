@@ -12,9 +12,9 @@ AddRemoveListView::AddRemoveListView(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	connect(ui->btnAdd, SIGNAL(clicked(bool)), this, SLOT(addClicked()));
-	connect(ui->btnRemove, SIGNAL(clicked(bool)), this, SLOT(removeClicked()));
-	connect(ui->leItemEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(ui->btnAdd, &QPushButton::clicked, this, &AddRemoveListView::addClicked);
+	connect(ui->btnRemove, &QPushButton::clicked, this, &AddRemoveListView::removeClicked);
+	connect(ui->leItemEdit, &QLineEdit::textChanged, this, &AddRemoveListView::textChanged);
 	
 	completer = new QCompleter(this);
 	completer->setCompletionMode(QCompleter::PopupCompletion);
@@ -22,11 +22,11 @@ AddRemoveListView::AddRemoveListView(QWidget *parent) :
 	completer->setCompletionRole(Qt::EditRole);
 	ui->leItemEdit->setCompleter(completer);
 
-	completionData = 0;
-	completionSorter = 0;
-	listData = 0;
-	listSorter = 0;
-	dataProvider = 0;
+	completionData = nullptr;
+	completionSorter = nullptr;
+	listData = nullptr;
+	listSorter = nullptr;
+	dataProvider = nullptr;
 }
 
 AddRemoveListView::~AddRemoveListView()
@@ -66,22 +66,22 @@ void AddRemoveListView::detachData()
 
 	if(completionData)
 	{
-		completer->setModel(0);
+		completer->setModel(nullptr);
 		dataProvider->doneWithCompletionSource(completionData);
-		completionData = 0;
+		completionData = nullptr;
 		delete completionSorter;
-		completionSorter = 0;
+		completionSorter = nullptr;
 	}
 	
 	if(listData)
 	{
-		disconnect(ui->ivItemList->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(listSelectionChanged(QModelIndex,QModelIndex)));
+		disconnect(ui->ivItemList->selectionModel(), &QItemSelectionModel::currentChanged, this, &AddRemoveListView::listSelectionChanged);
 
-		ui->ivItemList->setModel(0);
+		ui->ivItemList->setModel(nullptr);
 		dataProvider->doneWithListSource(listData);
-		listData = 0;
+		listData = nullptr;
 		delete listSorter;
-		listSorter = 0;
+		listSorter = nullptr;
 	}
 }
 
@@ -108,13 +108,13 @@ void AddRemoveListView::attachData()
 	ui->ivItemList->setModel(listSorter);
 	ui->ivItemList->setModelColumn(dataProvider->listColumn());
 
-	connect(ui->ivItemList->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(listSelectionChanged(QModelIndex,QModelIndex)));
+	connect(ui->ivItemList->selectionModel(), &QItemSelectionModel::currentChanged, this, &AddRemoveListView::listSelectionChanged);
 }
 
 void AddRemoveListView::addClicked()
 {
 	QString data = ui->leItemEdit->text();
-	if(data != "" && dataProvider->isStringValidForAdd(data))
+	if(!data.isEmpty() && dataProvider->isStringValidForAdd(data))
 	{
 		dataProvider->addByString(data);
 		ui->leItemEdit->clear();
@@ -127,7 +127,7 @@ void AddRemoveListView::addClicked()
 void AddRemoveListView::removeClicked()
 {
 	QString data = ui->leItemEdit->text();
-	if(data != "" && dataProvider->isStringValidForRemove(data))
+	if(!data.isEmpty() && dataProvider->isStringValidForRemove(data))
 	{
 		dataProvider->removeByString(data);
 		ui->leItemEdit->clear();
@@ -204,7 +204,7 @@ void AddRemoveListView::textChanged(QString newText)
 	}
 }
 
-QAbstractItemModel *AddRemoveListData::getCompletionSource() { return 0; }
-void AddRemoveListData::doneWithCompletionSource(QAbstractItemModel *source) { }
+QAbstractItemModel *AddRemoveListData::getCompletionSource() { return nullptr; }
+void AddRemoveListData::doneWithCompletionSource(QAbstractItemModel *source) { (void)source; }
 int AddRemoveListData::completionColumn() { return 0; }
 int AddRemoveListData::listColumn() { return 0; }

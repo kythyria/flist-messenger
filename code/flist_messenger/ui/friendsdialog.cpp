@@ -15,10 +15,12 @@ public:
 	{
 
 	}
+	
+	virtual ~IgnoreDataProvider();
 
 	virtual bool isStringValidForAdd(QString text)
 	{
-		return text != "" && !session->isCharacterIgnored(text);
+		return !text.isEmpty() && !session->isCharacterIgnored(text);
 	}
 
 	virtual bool isStringValidForRemove(QString text)
@@ -53,6 +55,8 @@ public:
 	}
 };
 
+IgnoreDataProvider::~IgnoreDataProvider() { }
+
 
 FriendsDialog::FriendsDialog(FSession *session, QWidget *parent) :
     QDialog(parent),
@@ -62,13 +66,13 @@ FriendsDialog::FriendsDialog(FSession *session, QWidget *parent) :
 	ui->setupUi(this);
 	ui->buttonBox->button(QDialogButtonBox::Close)->setIcon(QIcon(":/images/cross.png"));
 	
-	connect(ui->btnOpenPM, SIGNAL(clicked(bool)), this, SLOT(openPmClicked()));
-	connect(ui->lwFriendsList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(friendListContextMenu(QPoint)));
-	connect(ui->lwFriendsList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(friendListSelectionChanged(QListWidgetItem*,QListWidgetItem*)));
-	connect(ui->lwFriendsList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(friendListDoubleClicked(QListWidgetItem*)));
+	connect(ui->btnOpenPM, &QPushButton::clicked, this, &FriendsDialog::openPmClicked);
+	connect(ui->lwFriendsList,&QListWidget::customContextMenuRequested, this, &FriendsDialog::friendListContextMenu);
+	connect(ui->lwFriendsList,&QListWidget::currentItemChanged, this, &FriendsDialog::friendListSelectionChanged);
+	connect(ui->lwFriendsList,&QListWidget::itemDoubleClicked, this, &FriendsDialog::friendListDoubleClicked);
 	
-	connect(session, SIGNAL(notifyCharacterOnline(FSession*,QString,bool)), this, SLOT(notifyCharacterOnline(FSession*,QString,bool)));
-	connect(session, SIGNAL(notifyCharacterStatusUpdate(FSession*,QString)), this, SLOT(notifyCharacterStatus(FSession*,QString)));	
+	connect(session, &FSession::notifyCharacterOnline, this, &FriendsDialog::notifyCharacterOnline);
+	connect(session, &FSession::notifyCharacterStatusUpdate, this, &FriendsDialog::notifyCharacterStatus);	
 	this->notifyFriendsList(session);
 
 	ignoreData = new IgnoreDataProvider(session);
@@ -96,8 +100,8 @@ void FriendsDialog::notifyCharacterOnline(FSession *s, QString character, bool o
 {
 	if(!s->isCharacterFriend(character)) { return; }
 	
-	FCharacter* f = 0;
-	QListWidgetItem* lwi = 0;
+	FCharacter* f = nullptr;
+	QListWidgetItem* lwi = nullptr;
 	
 	QList<QListWidgetItem*> items = ui->lwFriendsList->findItems(character, Qt::MatchFixedString);
 	if(online && items.count() == 0)
@@ -204,7 +208,7 @@ void FriendsDialog::friendListSelectionChanged(QListWidgetItem *current, QListWi
 {
 	if(current == previous) { return; }
 	
-	ui->btnOpenPM->setEnabled(current != 0);
+	ui->btnOpenPM->setEnabled(current != nullptr);
 }
 
 void FriendsDialog::friendListDoubleClicked(QListWidgetItem *target)

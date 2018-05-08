@@ -26,6 +26,9 @@ QString htmlToPlainText(QString input);
 // the window is not on any screen.
 void centerOnScreen(QWidget *widge);
 
+#define QSL(text) QStringLiteral(text)
+#define QSLE QStringLiteral("")
+
 #define FLIST_NAME "F-List Messenger [Beta]"
 #define FLIST_VERSIONNUM "0.10.0." GIT_HASH
 #define FLIST_PRETTYVERSION "0.10.0." GIT_REV " (commit " GIT_HASH ")"

@@ -117,7 +117,7 @@ public:
 		dialog->setLayout(vbl);
 		dialog->setMinimumSize(500,400);
 
-		QObject::connect(buttons, SIGNAL(rejected()), dialog, SLOT(hide()));
+		QObject::connect(buttons, &QDialogButtonBox::rejected, dialog, &QDialog::hide);
 	}
 };
 }

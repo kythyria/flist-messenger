@@ -17,10 +17,10 @@ FMakeRoomDialog::FMakeRoomDialog(QWidget *parent) :
 	QPushButton *cancelButton = ui->buttonBox->button(QDialogButtonBox::Cancel);
 	cancelButton->setIcon(QIcon(":/images/cross.png"));
 
-	connect(ui->buttonBox, SIGNAL(rejected()), ui->roomName, SLOT(clear()));
-	connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
-	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onAccept()));
-	connect(ui->roomName, SIGNAL(textChanged(QString)), this, SLOT(onNameChange(QString)));
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, ui->roomName, &QLineEdit::clear);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &FMakeRoomDialog::close);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &FMakeRoomDialog::onAccept);
+	connect(ui->roomName, &QLineEdit::textChanged, this, &FMakeRoomDialog::onNameChange);
 }
 
 FMakeRoomDialog::~FMakeRoomDialog()

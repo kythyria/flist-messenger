@@ -53,15 +53,17 @@ void FAccount::loginHandle()
 	//emit ticketReady(this, ticket);
 }
 
+typedef FHttpApi::Request<FHttpApi::TicketResponse> loginReply_t;
+
 void FAccount::loginStart()
 {
 	debugMessage("account->loginStart()");
 	ticketvalid = false;
 
 	loginReply = fapi->getTicket(username, password);
-	connect(loginReply, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(loginSslErrors(QList<QSslError>)));
-	connect(loginReply, SIGNAL(failed(QString,QString)), this, SLOT(onLoginError(QString, QString)));
-	connect(loginReply, SIGNAL(succeeded()), this, SLOT(loginHandle()));
+	connect(loginReply, &loginReply_t::sslErrors, this, &FAccount::loginSslErrors);
+	connect(loginReply, &loginReply_t::failed, this, &FAccount::onLoginError);
+	connect(loginReply, &loginReply_t::succeeded, this, &FAccount::loginHandle);
 }
 
 void FAccount::loginUserPass(QString user, QString pass)

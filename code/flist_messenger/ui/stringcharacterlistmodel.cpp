@@ -9,10 +9,10 @@ StringCharacterListModel::StringCharacterListModel(NotifyStringList *list, QObje
 	  dataSource(list)
 {
 	NotifyListNotifier *notifier = dataSource->notifier();
-	connect(notifier, SIGNAL(added(int,int)), this, SLOT(sourceAdded(int,int)));
-	connect(notifier, SIGNAL(beforeAdd(int,int)), this, SLOT(sourceBeforeAdd(int,int)));
-	connect(notifier, SIGNAL(beforeRemove(int,int)), this, SLOT(sourceBeforeRemove(int,int)));
-	connect(notifier, SIGNAL(removed(int,int)), this, SLOT(sourceRemoved(int,int)));
+	connect(notifier, &NotifyListNotifier::added, this, &StringCharacterListModel::sourceAdded);
+	connect(notifier, &NotifyListNotifier::beforeAdd, this, &StringCharacterListModel::sourceBeforeAdd);
+	connect(notifier, &NotifyListNotifier::beforeRemove, this, &StringCharacterListModel::sourceBeforeRemove);
+	connect(notifier, &NotifyListNotifier::removed, this, &StringCharacterListModel::sourceRemoved);
 }
 
 int StringCharacterListModel::rowCount(const QModelIndex &parent) const
